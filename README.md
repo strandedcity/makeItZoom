@@ -11,16 +11,18 @@ Web applications can now do real work, and frequently real work requires real es
 
 It has no dependencies. To use it, just include the script at the top of your page:
 
-***
+```HTML
+<script type="text/javascript" src="makeItZoom.min.js"></script>
+```
 
 You can specify the DOM element that will contain the zoomable interface, and the elements that will zoom. Use the classes "zoomContainer" and "makeItZoom" respectively, or specify your own during init. Here's some makeItZoom-able markup:
 
-```
+```HTML
 <div class="zoomContainer">
   <div class="box makeItZoom">This box will zoom</div>
   <div class="box makeItZoom">
     <div class="child">
-      This box will zoom with its parent, but not separately
+      This box will zoom with its parent
     </div>
   </div>
 </div>
@@ -28,8 +30,8 @@ You can specify the DOM element that will contain the zoomable interface, and th
 
 At the bottom of your page, initialize makeItZoom. Every configurable parameter has a default, so you can call simply makeItZoom(), but everything is configurable. Defaults are:
 
-```
-<script>
+```HTML
+<script type="text/javascript">
   makeItZoom({
     containerClass: "zoomContainer", // optional
     zoomableClass: "makeItZoom", // optional
@@ -40,5 +42,5 @@ At the bottom of your page, initialize makeItZoom. Every configurable parameter 
     zoomableDrag: function(element,startPosition){}, // callback when the user has started dragging a zoomable element to a new position. startPosition is given in world coordinates of an un-zoomed space
     zoomableDrop: function(element, endPosition, [elements underneath cursor]){}, // callback when the user drops an object in a new position
   });
-<script>
+</script>
 ```
