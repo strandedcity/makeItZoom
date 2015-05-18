@@ -8,7 +8,7 @@ makeItZoom.prototype.init = function(options){
     options.maxZoomScale = options.maxZoomScale || 1.0;
     options.minZoomScale = options.minZoomScale || 0.1;
     options.zoomSpeed = options.zoomSpeed || 2.0;
-    options.zoomMode = options.zoomMode || 0; // Zoom around container center. 1 = Zoom around pointer
+    options.zoomTowardMouse = options.zoomTowardMouse !== false; // Zoom centers around mouse cursor by default, (0,0) if false
     this.options = options;
 
     var container = document.getElementById(options.containerId);
@@ -75,10 +75,10 @@ makeItZoom.prototype.childElementIterator = function(parent,childCallback){
 makeItZoom.prototype.attachControls = function(){
     var that = this;
     this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
-    this.controls.noRotate = true;
     this.controls.zoomSpeed = this.options.zoomSpeed;
     this.controls.minZoomScale = this.options.minZoomScale;
     this.controls.maxZoomScale = this.options.maxZoomScale;
+    this.controls.zoomTowardMouse = this.options.zoomTowardMouse;
 
     this.controls.addEventListener( 'change', this.render );
 //        $(this.controls.domElement).on('dblclick',{workspace: that},this.showChooser);
