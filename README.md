@@ -4,9 +4,9 @@ A JavaScript Framework that makes Zooming User Interfaces Easy
 Web applications can now do real work, and frequently real work requires real estate. makeItZoom.js gives you infinite real estate for your web application, along with several tools that every serious web application will need at its core:
 
 - Infinitely Zooming Workspace
-- CSS Styling Works like normal
+- CSS Styling works normally
 - Native HTML controls, such as inputs
-- Context Menu Customizations
+- Context Menu support
 - Drag and Drop Events
 
 It has no dependencies. To use it, just include the script at the top of your page:

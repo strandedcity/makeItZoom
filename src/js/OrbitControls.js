@@ -21,6 +21,23 @@
 //      controls.target.z = 150;
 // Simple substitute "OrbitControls" and the control should work as-is.
 
+// CustomEvent Polyfill for ie9+
+// See https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
+//(function () {
+//    if (window.CustomEvent !== "undefined") return;
+//
+//    function CustomEvent ( event, params ) {
+//        params = params || { bubbles: false, cancelable: false, detail: undefined };
+//        var evt = document.createEvent( 'CustomEvent' );
+//        evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+//        return evt;
+//    }
+//
+//    CustomEvent.prototype = window.Event.prototype;
+//
+//    window.CustomEvent = CustomEvent;
+//})();
+
 THREE.OrbitControls = function ( object, domElement ) {
 
 	this.object = object;
@@ -76,8 +93,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	var dollyEnd = new THREE.Vector2();
 	var dollyDelta = new THREE.Vector2();
 
-	var phiDelta = 0;
-	var thetaDelta = 0;
 	var scale = 1;
 	var pan = new THREE.Vector3();
 
@@ -302,20 +317,11 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 			panStart.set( event.clientX, event.clientY );
 
-            var t = setTimeout(function(){
-                if (state == STATE.NONE) {
-                    // button released, looks like a right-click
-                    console.log('right click', event.target);
-                    var event = document.createEvent('Event');
-                    event.initEvent('contextMenuClick', true, true);
-                    scope.dispatchEvent( event );
-                    console.warn('attach custom data to event, such as the target and mouse position, so it can be handled from the outside!');
-                    //https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events
-                    //http://stackoverflow.com/questions/9071485/javascript-event-creation-with-customly-attached-data
-                }
-                clearTimeout(t);
-            },130);
-
+            // If the mouse button is lifted fast enough, this click should propagate at mouseup:
+            scope.rightClick = {
+                time: new Date(),
+                originalEvent: event
+            };
 		}
 
 		document.addEventListener( 'mousemove', onMouseMove, false );
@@ -366,9 +372,23 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	}
 
-	function onMouseUp( /* event */ ) {
+	function onMouseUp( event ) {
 
 		if ( scope.enabled === false ) return;
+
+        if (event.button == 2 && scope.rightClick !== "undefined") {
+            // right button mouseup could trigger a context menu event, if it occurs fast enough:
+            if (new Date() - scope.rightClick.time < 130) {
+                var savedEvent = scope.rightClick.originalEvent;
+                var wrappedEvent = new CustomEvent('mz_contextmenu');
+                for(var k in savedEvent) {
+                    if (savedEvent.hasOwnProperty(k)) {
+                        wrappedEvent[k]=savedEvent[k];
+                    }
+                }
+                savedEvent.target.dispatchEvent(wrappedEvent);
+            }
+        }
 
 		document.removeEventListener( 'mousemove', onMouseMove, false );
 		document.removeEventListener( 'mouseup', onMouseUp, false );
