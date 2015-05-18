@@ -281,7 +281,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	}
 
 	function onMouseDown( event ) {
-
 		if ( scope.enabled === false ) return;
 
 		if ( event.button === 0) {
@@ -302,6 +301,20 @@ THREE.OrbitControls = function ( object, domElement ) {
 			state = STATE.PAN;
 
 			panStart.set( event.clientX, event.clientY );
+
+            var t = setTimeout(function(){
+                if (state == STATE.NONE) {
+                    // button released, looks like a right-click
+                    console.log('right click', event.target);
+                    var event = document.createEvent('Event');
+                    event.initEvent('contextMenuClick', true, true);
+                    scope.dispatchEvent( event );
+                    console.warn('attach custom data to event, such as the target and mouse position, so it can be handled from the outside!');
+                    //https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events
+                    //http://stackoverflow.com/questions/9071485/javascript-event-creation-with-customly-attached-data
+                }
+                clearTimeout(t);
+            },130);
 
 		}
 
@@ -553,7 +566,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.domElement.addEventListener( 'contextmenu', function ( event ) {
 		// prevent the context menu, treat the right click as a regular mousedown event
 		event.preventDefault();
-		onMouseDown(event);
 	}, false );
 	this.domElement.addEventListener( 'mousedown', onMouseDown, false );
 	this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );

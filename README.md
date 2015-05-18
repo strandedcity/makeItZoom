@@ -4,10 +4,10 @@ A JavaScript Framework that makes Zooming User Interfaces Easy
 Web applications can now do real work, and frequently real work requires real estate. makeItZoom.js gives you infinite real estate for your web application, along with several tools that every serious web application will need at its core:
 
 - Infinitely Zooming Workspace
-- Drag and Drop Events
 - CSS Styling Works like normal
-- Native HTML controls
+- Native HTML controls, such as inputs
 - Context Menu Customizations
+- Drag and Drop Events
 
 It has no dependencies. To use it, just include the script at the top of your page:
 
@@ -43,3 +43,8 @@ At the bottom of your page, initialize makeItZoom. Every configurable parameter 
   });
 </script>
 ```
+
+**Context Menus**
+
+The browser's native context menu will be suppressed by default since dragging with the right mouse button serves as a "pan" gesture. You can supply a callback for right-clicks, making it possible to create context-aware context menus for each individual element in your draggable interface. The HTML for your context menu should not be placed inside the makeItZoom container, since it will then be scaled. More likely, you will want to position the context menu absolutely at the screen position of the user's click. Here's an example:
+*********
