@@ -229,62 +229,62 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	};
 
+    this.unproject = function (camera){
+        var vector = new THREE.Vector3();
+
+        vector.set(
+            ( scope.clientX / scope.domElement.clientWidth ) * 2 - 1,
+            - ( scope.clientY / scope.domElement.clientHeight ) * 2 + 1,
+            0.5 );
+
+
+        vector.unproject( camera );
+        var dir = vector.sub( camera.position ).normalize();
+
+        var distance = - camera.position.z / dir.z;
+
+        return camera.position.clone().add( dir.multiplyScalar( distance ) );
+    }
+
 	this.update = function () {
+
+        var mousePositionPreZoom;
+        if (scope.recenterCursor) mousePositionPreZoom = scope.unproject(this.object).clone();
 
 		var position = this.object.position;
 
 		offset.copy( position ).sub( this.target );
 
-		// rotate offset to "y-axis-is-up" space
-		offset.applyQuaternion( quat );
-
-		// angle from z-axis around y-axis
-
-		var theta = Math.atan2( offset.x, offset.z );
-
-		// angle from y-axis
-
-		var phi = Math.atan2( Math.sqrt( offset.x * offset.x + offset.z * offset.z ), offset.y );
-
-		if ( this.autoRotate ) {
-
-			this.rotateLeft( getAutoRotationAngle() );
-
-		}
-
-		theta += thetaDelta;
-		phi += phiDelta;
-
-		// restrict phi to be between desired limits
-		phi = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, phi ) );
-
-		// restrict phi to be betwee EPS and PI-EPS
-		phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
-
 		var radius = offset.length() * scale;
 
 		// restrict radius to be between desired limits
         var fov = 0.5 / Math.tan( THREE.Math.degToRad( this.object.fov * 0.5 ) ) * this.domElement.clientHeight;
-        radius = Math.max( fov/this.maxZoomScale, Math.min( fov/this.minZoomScale, radius ) );
+        offset.z = Math.max( fov/this.maxZoomScale, Math.min( fov/this.minZoomScale, radius ) );
 		
 		// move target to panned location
 		this.target.add( pan );
 
-		offset.x = radius * Math.sin( phi ) * Math.sin( theta );
-		offset.y = radius * Math.cos( phi );
-		offset.z = radius * Math.sin( phi ) * Math.cos( theta );
-
-		// rotate offset back to "camera-up-vector-is-up" space
-		offset.applyQuaternion( quatInverse );
-
 		position.copy( this.target ).add( offset );
 
-		this.object.lookAt( this.target );
-
-		thetaDelta = 0;
-		phiDelta = 0;
 		scale = 1;
 		pan.set( 0, 0, 0 );
+
+        if (scope.recenterCursor === true) {
+            scope.recenterCursor = false;
+            // This is normally done in the renderer, but since we're including
+            // a "pan" whose amount depends on the future location of the mouse
+            // pointer in the scene AFTER the current zoom, we're doing it here.
+            this.object.updateMatrixWorld();
+            var diff = scope.unproject(this.object).sub(mousePositionPreZoom);
+
+            scope.panLeft(diff.x);
+            scope.panUp(-diff.y);
+
+            // Re-run the update with the additional (dependent) pan motion
+            // that will offset the un-centering caused by the zoom.
+            scope.update();
+            return;
+        }
 
 		// update condition is:
 		// min(camera displacement, camera rotation in radians)^2 > EPS
@@ -433,7 +433,9 @@ THREE.OrbitControls = function ( object, domElement ) {
 	}
 
 	function onMouseWheel( event ) {
-
+        scope.recenterCursor = true;
+        scope.clientX = event.clientX;
+        scope.clientY = event.clientY;
 		if ( scope.enabled === false || scope.noZoom === true ) return;
 
 		//event.preventDefault();
