@@ -40,15 +40,6 @@ makeItZoom.prototype.init = function(options){
 //    this.attachMetakeyDetectors();
 };
 
-//makeItZoom.prototype.defineOptions = function(){
-//    window.MZ = {
-//        ZOOM_MODE: {
-//            CENTER: 0,  // Zoom around DOM container's center
-//            CURSOR: 1   // Zoom around mouse pointer
-//        }
-//    }
-//};
-
 makeItZoom.prototype.importDOM =function(container){
     // Must loop over children twice to find their offsets, then move them into the right container
     // If children are positioned using DOM flow to begin with, they will pile on top of
