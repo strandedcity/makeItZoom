@@ -70,8 +70,8 @@
 <body>
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
     <div id="makeItZoom">
-      <div class="box" id="contextMenuExample">This box will zoom</div>
-      <div class="box">
+      <div class="box" id="leftBox">This box will zoom</div>
+      <div class="box" id="rightBox">
         <div class="child">
           This box will zoom with its parent
         </div>
@@ -83,7 +83,21 @@
         document.getElementById("contextMenuExample").addEventListener("mz_contextmenu",function(e){
             console.log('context menu!', e.clientX, e.clientY, e.target);
         });
-        new makeItZoom();
+        new makeItZoom({
+            contextMenuGenerator: function(element){
+                return {
+                    // Specify images, dividers, and sub-menus?
+                    // Perhaps this function should actually return the HTML for the menu,
+                    // so users of the library can _.template() their own?
+                    // But then how are all the event handlers attached/detached to the menu items?
+                    opt1: "Remove " + element.id,
+                    opt2: "Duplicate " + element.id
+                }
+            },
+            contextMenuClickHandler: function(element, selection) {
+                alert("You clicked " + selection + " on " + element.id);
+            }
+        });
     </script>
 </body>
 </html>
