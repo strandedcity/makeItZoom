@@ -66,12 +66,13 @@
     <script type="text/javascript" src="../src/js/CSS3DRenderer.js"></script>
     <script type="text/javascript" src="../src/js/OrbitControls.js"></script>
     <script type="text/javascript" src="../src/js/makeItZoom.js"></script>
+    <script type="text/javascript" src="../src/js/interact-1.2.4.js"></script>
 </head>
 <body>
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
     <div id="makeItZoom">
       <div class="box" id="contextMenuExample">This box will zoom</div>
-      <div class="box">
+      <div class="box draggable">
         <div class="child">
           This box will zoom with its parent
         </div>
@@ -80,10 +81,43 @@
 
     <!-- Initialize makeItZoom() at bottom of page, or inside $.ready() or similar -->
     <script type="text/javascript">
+        // You can start by initializing the zoom container
+        var zoomInstance = new makeItZoom();
+
+        // Add your own context menu handlers, and use any context menu JavaScript / HTML Framework you like
         document.getElementById("contextMenuExample").addEventListener("mz_contextmenu",function(e){
             console.log('context menu!', e.clientX, e.clientY, e.target);
         });
-        new makeItZoom();
+
+        // Drag-and-drop is easy to implement with any library of your choosing. The one catch is that most drag-and-drop
+        // libraries also manipulate the css transform properties of the elements, so you need to prevent those properties
+        // from being overwritten. Here's an example implementation with interact.js:
+        interact('.draggable').draggable({
+            // call this function on every dragmove event
+            onmove: function(event){
+                var currZoom = zoomInstance.getCurrentScale();
+
+                var target = event.target,
+                        // keep the dragged position in the data-x/data-y attributes
+                        // NOTE: dividing by the current zoom level makes sure to keep in sync with the user's pointer!
+                        // It's even possible to zoom *during* a drag with this method
+                        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx/currZoom,
+                        y = (parseFloat(target.getAttribute('data-y')) || 0) - event.dy/currZoom;
+
+                if (!target.hasAttribute("old-transform")) {
+                    target.setAttribute("old-transform",target.style.webkitTransform || target.style.transform);
+                }
+
+                // translate the element
+                target.style.webkitTransform =
+                        target.style.transform =
+                                'translate(' + x + 'px, ' + y + 'px) ' + target.getAttribute("old-transform");
+
+                // update the posiion attributes
+                target.setAttribute('data-x', x);
+                target.setAttribute('data-y', y);
+            }
+        });
     </script>
 </body>
 </html>

@@ -101,3 +101,7 @@ makeItZoom.prototype.getOffset = function(el){
     }
     return { top: _y, left: _x };
 };
+
+makeItZoom.prototype.getCurrentScale = function(){
+    return this.controls.currentZoomScale;
+};

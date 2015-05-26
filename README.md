@@ -6,8 +6,9 @@ Web applications can now do real work, and frequently real work requires real es
 - Infinitely Zooming Workspace
 - CSS Styling works normally
 - Native HTML controls, such as inputs
-- Context Menu support
-- Drag and Drop Events
+- Dependency Free: Use whichever JS Libraries and CSS Frameworks you're already using, and no extras
+- Context Menu support (Plays nice with a library of your choice)
+- Drag and Drop Events (Plays nice with a library of your choice)
 
 It has no dependencies. To use it, just include the script at the top of your page:
 

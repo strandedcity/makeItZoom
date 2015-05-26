@@ -64,6 +64,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	// Limits to how far you can dolly in and out
     this.minZoomScale = 0.05;
     this.maxZoomScale = 1;
+	this.currentZoomScale = 1;
 
 	// Set to true to disable this control
 	this.noPan = false;
@@ -235,7 +236,10 @@ THREE.OrbitControls = function ( object, domElement ) {
 		// restrict radius to be between desired limits
         var fov = 0.5 / Math.tan( THREE.Math.degToRad( this.object.fov * 0.5 ) ) * this.domElement.clientHeight;
         offset.z = Math.max( fov/this.maxZoomScale, Math.min( fov/this.minZoomScale, radius ) );
-		
+
+		// so we can query it from outside at any point:
+		scope.currentZoomScale = fov/offset.z;
+
 		// move target to panned location
 		this.target.add( pan );
 
