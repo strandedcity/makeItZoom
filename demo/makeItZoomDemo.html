@@ -41,6 +41,12 @@
             border: 5px solid #EEE;
 
         }
+        .box.drop-target {
+            background-color: #989898;
+        }
+        .box.dropped-successfully {
+            background-color: #c8e858;
+        }
         .child {
             background-color: #cccccc;
             width: 200px;
@@ -71,7 +77,7 @@
 <body>
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
     <div id="makeItZoom">
-      <div class="box" id="contextMenuExample">This box will zoom</div>
+      <div class="box dropzone" id="contextMenuExample">This box will zoom</div>
       <div class="box draggable">
         <div class="child">
           This box will zoom with its parent
@@ -95,6 +101,10 @@
         interact('.draggable').draggable({
             // call this function on every dragmove event
             onmove: function(event){
+                // ignore dragging with the right mouse button
+                // TODO: Make this a function of the mouse button configuration on zoomInstance
+                if (event.button === 2) { return; }
+
                 var currZoom = zoomInstance.getCurrentScale();
 
                 var target = event.target,
@@ -116,6 +126,44 @@
                 // update the posiion attributes
                 target.setAttribute('data-x', x);
                 target.setAttribute('data-y', y);
+            }
+        });
+
+        // enable draggables to be dropped into this
+        interact('.dropzone').dropzone({
+            // only accept elements matching this CSS selector
+            accept: '.draggable',
+            // Require a 50% element overlap for a drop to be possible
+            overlap: 0.50,
+
+            // listen for drop related events:
+
+            ondropactivate: function (event) {
+                // add active dropzone feedback
+
+                event.relatedTarget.classList.remove('dropped-successfully');
+                event.target.classList.add('drop-active');
+            },
+            ondragenter: function (event) {
+                var draggableElement = event.relatedTarget,
+                        dropzoneElement = event.target;
+
+                // feedback the possibility of a drop
+                dropzoneElement.classList.add('drop-target');
+                draggableElement.classList.add('can-drop');
+            },
+            ondragleave: function (event) {
+                // remove the drop feedback style
+                event.target.classList.remove('drop-target');
+                event.relatedTarget.classList.remove('can-drop');
+            },
+            ondrop: function (event) {
+                event.relatedTarget.classList.add('dropped-successfully');
+            },
+            ondropdeactivate: function (event) {
+                // remove active dropzone feedback
+                event.target.classList.remove('drop-active');
+                event.target.classList.remove('drop-target');
             }
         });
     </script>
