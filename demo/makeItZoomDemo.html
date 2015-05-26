@@ -95,6 +95,10 @@
             console.log('context menu!', e.clientX, e.clientY, e.target);
         });
 
+        zoomInstance.container.addEventListener("mz_render",function(e){
+            console.log('render event', e.mz_scale, e.mz_center_x, e.mz_center_y)
+        });
+
         // Drag-and-drop is easy to implement with any library of your choosing. The one catch is that most drag-and-drop
         // libraries also manipulate the css transform properties of the elements, so you need to prevent those properties
         // from being overwritten. Here's an example implementation with interact.js:

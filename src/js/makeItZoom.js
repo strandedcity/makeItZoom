@@ -13,10 +13,10 @@ makeItZoom.prototype.init = function(options){
     options.disableNativeContextMenu = typeof options.disableNativeContextMenu === "boolean" ? options.disableNativeContextMenu : true; // really only useful when panButton = 0
     this.options = options;
 
-    var container = document.getElementById(options.containerId);
+    this.container = document.getElementById(options.containerId);
 
-    this.width = container.offsetWidth;
-    this.height = container.offsetHeight;
+    this.width = this.container.offsetWidth;
+    this.height = this.container.offsetHeight;
 
     this.camera = new THREE.PerspectiveCamera( 70, this.width / this.height, 1, 1000000 );
     this.camera.position.z = 1200;
@@ -32,7 +32,7 @@ makeItZoom.prototype.init = function(options){
 
     this.attachControls();
 
-    this.importDOM.call(this,container);
+    this.importDOM.call(this,this.container);
 
     this.render();
 };
@@ -82,6 +82,13 @@ makeItZoom.prototype.attachControls = function(){
 
 makeItZoom.prototype.render = function(){
     this.renderer.render(this.scene,this.camera);
+
+    // Dispatch an event with the new center and scale:
+    var renderEvent = new CustomEvent('mz_render');
+    renderEvent["mz_center_x"] = this.controls.object.position.x;
+    renderEvent["mz_center_y"] = this.controls.object.position.y;
+    renderEvent["mz_scale"] = this.controls.currentZoomScale;
+    this.container.dispatchEvent(renderEvent);
 };
 
 makeItZoom.prototype.addZoomable = function(element, offset){
@@ -107,4 +114,10 @@ makeItZoom.prototype.getOffset = function(el){
 
 makeItZoom.prototype.getCurrentScale = function(){
     return this.controls.currentZoomScale;
+};
+
+makeItZoom.prototype.zoomTo = function(x,y,scale){
+    // TODO: specify the pan and zooms. Just adjust the xy position of both the "center" and the "object" inside the controls
+    // Then, specify scale, too.
+    this.render();
 };
