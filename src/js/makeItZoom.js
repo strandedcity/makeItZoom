@@ -9,6 +9,8 @@ makeItZoom.prototype.init = function(options){
     options.minZoomScale = options.minZoomScale || 0.1;
     options.zoomSpeed = options.zoomSpeed || 2.0;
     options.zoomTowardMouse = options.zoomTowardMouse !== false; // Zoom centers around mouse cursor by default, (0,0) if false
+    options.panButton = typeof options.panButton != "undefined" ? options.panButton : 2; // right button pan by default. Set to null to disable panning
+    options.disableNativeContextMenu = typeof options.disableNativeContextMenu === "boolean" ? options.disableNativeContextMenu : true; // really only useful when panButton = 0
     this.options = options;
 
     var container = document.getElementById(options.containerId);
@@ -33,11 +35,6 @@ makeItZoom.prototype.init = function(options){
     this.importDOM.call(this,container);
 
     this.render();
-
-//    this.setupContextMenu();
-//    this.setupDraggableEventHandlers();
-//
-//    this.attachMetakeyDetectors();
 };
 
 makeItZoom.prototype.importDOM =function(container){
@@ -70,10 +67,16 @@ makeItZoom.prototype.attachControls = function(){
     this.controls.minZoomScale = this.options.minZoomScale;
     this.controls.maxZoomScale = this.options.maxZoomScale;
     this.controls.zoomTowardMouse = this.options.zoomTowardMouse;
+    this.controls.panButton = this.options.panButton;
+
+    if (this.options.disableNativeContextMenu === true) {
+        this.controls.domElement.addEventListener( 'contextmenu', function ( event ) {
+            // prevent the context menu, treat the right click as a regular mousedown event
+            event.preventDefault();
+        }, false );
+    }
 
     this.controls.addEventListener( 'change', this.render );
-//        $(this.controls.domElement).on('dblclick',{workspace: that},this.showChooser);
-//        $(this.controls.domElement).on('click',{workspace: that},this.hideChooser);
     this.render();
 };
 

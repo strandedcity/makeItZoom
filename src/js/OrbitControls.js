@@ -67,6 +67,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	this.currentZoomScale = 1;
 
 	// Set to true to disable this control
+	this.panButton = 2; // right drag to pan by default
 	this.noPan = false;
 	this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
 
@@ -302,10 +303,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 	function onMouseDown( event ) {
 		if ( scope.enabled === false ) return;
 
-		if ( event.button === 0) {
-            // rotate (removed)
-
-		} else if ( event.button === 1 ) {
+		if ( event.button === 1 ) {
 			if ( scope.noZoom === true ) return;
             event.preventDefault();
 
@@ -313,7 +311,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 			dollyStart.set( event.clientX, event.clientY );
 
-		} else if ( event.button === 2 ) {
+		} else if ( event.button === scope.panButton ) {
 			if ( scope.noPan === true ) return;
             event.preventDefault();
 
@@ -587,10 +585,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	}
 
-	this.domElement.addEventListener( 'contextmenu', function ( event ) {
-		// prevent the context menu, treat the right click as a regular mousedown event
-		event.preventDefault();
-	}, false );
 	this.domElement.addEventListener( 'mousedown', onMouseDown, false );
 	this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
 	this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
