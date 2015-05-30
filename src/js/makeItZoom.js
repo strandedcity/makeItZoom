@@ -47,7 +47,7 @@ makeItZoom.prototype.importDOM =function(container){
         child.mzOffset = that.getOffset(child);
     });
     this.childElementIterator(container,function(child){
-        that.addZoomable.call(that,child,child.mzOffset);
+        that._addZoomable.call(that,child,child.mzOffset);
     });
 };
 
@@ -91,7 +91,7 @@ makeItZoom.prototype.render = function(){
     this.container.dispatchEvent(renderEvent);
 };
 
-makeItZoom.prototype.addZoomable = function(element, offset){
+makeItZoom.prototype._addZoomable = function(element, offset){
 
     var cssObject = new THREE.CSS3DObject( element );
     cssObject.position.x = offset.left;
@@ -99,6 +99,29 @@ makeItZoom.prototype.addZoomable = function(element, offset){
     cssObject.position.z = 0;
 
     this.scene.add(cssObject);
+};
+
+makeItZoom.prototype.addZoomable = function(element, offset){
+    this._addZoomable(element,offset);
+    this.render();
+}
+
+makeItZoom.prototype.removeZoomable = function(element){
+    var removeMe = null;
+
+    for (var i = 0; i< this.scene.children.length; i++){
+        if (this.scene.children[i].element === element) {
+            removeMe = this.scene.children[i];
+        }
+    }
+
+    if (removeMe !== null) {
+        this.scene.remove(removeMe);
+    } else {
+        console.warn("The specified element could not be removed from the makeItZoom workspace, because it couldn't be found.");
+    }
+
+    this.render();
 };
 
 makeItZoom.prototype.getOffset = function(el){
