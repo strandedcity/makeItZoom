@@ -121,6 +121,14 @@ THREE.OrbitControls = function ( object, domElement ) {
 	var startEvent = { type: 'start'};
 	var endEvent = { type: 'end'};
 
+    // Pass in the scale of the zoomable workspace that the user will see as an absolute percentage
+    this.setScale = function(sc){
+        var fov = 0.5 / Math.tan( THREE.Math.degToRad( this.object.fov * 0.5 ) ) * this.domElement.clientHeight,
+            targetZ = fov/sc;
+
+        scale = targetZ / this.object.position.z;
+    };
+
 	// pass in distance in world space to move left
 	this.panLeft = function ( distance ) {
 
@@ -223,7 +231,7 @@ THREE.OrbitControls = function ( object, domElement ) {
         return camera.position.clone().add( dir.multiplyScalar( distance ) );
     }
 
-	this.update = function () {
+	this.update = function (skipRecentering) {
 
         var mousePositionPreZoom;
         if (scope.recenterCursor) mousePositionPreZoom = scope.unproject(this.object).clone();
@@ -249,7 +257,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 		scale = 1;
 		pan.set( 0, 0, 0 );
 
-        if (scope.recenterCursor === true) {
+        if (scope.recenterCursor === true && skipRecentering !== true) {
             scope.recenterCursor = false;
             // This is normally done in the renderer, but since we're including
             // a "pan" whose amount depends on the future location of the mouse

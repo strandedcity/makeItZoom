@@ -117,7 +117,16 @@ makeItZoom.prototype.getCurrentScale = function(){
 };
 
 makeItZoom.prototype.zoomTo = function(x,y,scale){
-    // TODO: specify the pan and zooms. Just adjust the xy position of both the "center" and the "object" inside the controls
-    // Then, specify scale, too.
-    this.render();
+    var currX = this.controls.object.position.x,
+        currY = this.controls.object.position.y,
+        currScale = this.controls.currentZoomScale;
+
+    if (typeof x !== "number") {x=currX;}
+    if (typeof y !== "number") {y=currY;}
+    if (typeof scale !== "number") {scale = currScale;}
+
+    this.controls.panLeft(currX-x);
+    this.controls.panUp(y-currY);
+    this.controls.setScale(scale);
+    this.controls.update(true);
 };
