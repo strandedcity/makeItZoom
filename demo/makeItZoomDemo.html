@@ -68,7 +68,7 @@
             position: absolute;
         }
     </style>
-    <!--<script type="text/javascript" src="../src/js/three.min.js"></script>-->
+    <script type="text/javascript" src="../src/js/three.min.js"></script>
 
     <!--<script type="text/javascript" src="../src/threejs_files/Three.js"></script>-->
     <!--<script type="text/javascript" src="../src/threejs_files/Vector2.js"></script>-->
@@ -82,10 +82,10 @@
     <!--<script type="text/javascript" src="../src/threejs_files/PerspectiveCamera.js"></script>-->
     <!--<script type="text/javascript" src="../src/threejs_files/Scene.js"></script>-->
 
-    <!--<script type="text/javascript" src="../src/js/CSS3DRenderer.js"></script>-->
-    <!--<script type="text/javascript" src="../src/js/OrbitControls.js"></script>-->
-    <!--<script type="text/javascript" src="../src/js/makeItZoom.js"></script>-->
-    <script type="text/javascript" src="../dist/makeItZoom_0.0.1_noDeps.min.js"></script>
+    <script type="text/javascript" src="../src/js/CSS3DRenderer.js"></script>
+    <script type="text/javascript" src="../src/js/OrbitControls.js"></script>
+    <script type="text/javascript" src="../src/js/makeItZoom.js"></script>
+    <!--<script type="text/javascript" src="../dist/makeItZoom_0.0.1_noDeps.min.js"></script>-->
     <script type="text/javascript" src="../src/js/interact-1.2.4.min.js"></script>
 </head>
 <body>
@@ -103,6 +103,7 @@
     <script type="text/javascript">
         // You can start by initializing the zoom container
         var zoomInstance = new makeItZoom();
+        window.zoomInstance = zoomInstance;
 
         // Add your own context menu handlers, and use any context menu JavaScript / HTML Framework you like
         document.getElementById("contextMenuExample").addEventListener("mz_contextmenu",function(e){
