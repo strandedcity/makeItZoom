@@ -93,10 +93,10 @@ makeItZoom.prototype.render = function(){
 
     // Dispatch an event with the new center and scale:
     var renderEvent = new CustomEvent('mz_render');
-    renderEvent["mz_center_x"] = this.controls.object.position.x;
     renderEvent["mz_scale"] = this.controls.currentZoomScale;
-    this.container.dispatchEvent(renderEvent);
+    renderEvent["mz_center_x"] = this.controls.object.position.x;
     renderEvent["mz_center_y"] = this.controls.object.position.y;
+    this.container.dispatchEvent(renderEvent);
 };
 
 makeItZoom.prototype._addZoomable = function(element, offset){

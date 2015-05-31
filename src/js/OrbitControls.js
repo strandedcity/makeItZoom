@@ -391,11 +391,9 @@ THREE.OrbitControls = function ( object, domElement ) {
             if (new Date() - scope.rightClick.time < 130) {
                 var savedEvent = scope.rightClick.originalEvent;
                 var wrappedEvent = new CustomEvent('mz_contextmenu');
-                for(var k in savedEvent) {
-                    if (savedEvent.hasOwnProperty(k)) {
-                        wrappedEvent[k]=savedEvent[k];
-                    }
-                }
+                wrappedEvent["clientX"] = savedEvent["clientX"];
+                wrappedEvent["clientY"] = savedEvent["clientY"];
+                wrappedEvent["target"] = savedEvent["target"];
                 savedEvent.target.dispatchEvent(wrappedEvent);
             }
         }
