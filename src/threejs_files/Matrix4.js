@@ -22,12 +22,6 @@ THREE.Matrix4 = function () {
 
 	] );
 
-	if ( arguments.length > 0 ) {
-
-		THREE.error( 'THREE.Matrix4: the constructor no longer reads arguments. use .set() instead.' );
-
-	}
-
 };
 
 THREE.Matrix4.prototype = {
@@ -659,7 +653,7 @@ THREE.Matrix4.prototype = {
 
 		if ( det == 0 ) {
 
-			var msg = "THREE.Matrix4.getInverse(): can't invert matrix, determinant is 0";
+			var msg = "Can't invert matrix, determinant is 0";
 
 			if ( throwOnInvertible || false ) {
 

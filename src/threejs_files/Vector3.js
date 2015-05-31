@@ -91,13 +91,6 @@ THREE.Vector3.prototype = {
 
 	add: function ( v, w ) {
 
-		if ( w !== undefined ) {
-
-			THREE.warn( 'THREE.Vector3: .add() now only accepts one argument. Use .addVectors( a, b ) instead.' );
-			return this.addVectors( v, w );
-
-		}
-
 		this.x += v.x;
 		this.y += v.y;
 		this.z += v.z;
@@ -127,13 +120,6 @@ THREE.Vector3.prototype = {
 	},
 
 	sub: function ( v, w ) {
-
-		if ( w !== undefined ) {
-
-			THREE.warn( 'THREE.Vector3: .sub() now only accepts one argument. Use .subVectors( a, b ) instead.' );
-			return this.subVectors( v, w );
-
-		}
 
 		this.x -= v.x;
 		this.y -= v.y;
