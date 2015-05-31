@@ -1,3 +1,4 @@
+#!/bin/sh
 echo "Compiling makeItZoom without dependencies..."
 
 java -jar compiler.jar \
