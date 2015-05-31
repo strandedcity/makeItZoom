@@ -4,16 +4,20 @@ function makeItZoom(){
 }
 
 makeItZoom.prototype.init = function(options){
-    options.containerId = options.containerId || "makeItZoom";
-    options.maxZoomScale = options.maxZoomScale || 1.0;
-    options.minZoomScale = options.minZoomScale || 0.1;
-    options.zoomSpeed = options.zoomSpeed || 2.0;
-    options.zoomTowardMouse = options.zoomTowardMouse !== false; // Zoom centers around mouse cursor by default, (0,0) if false
-    options.panButton = typeof options.panButton != "undefined" ? options.panButton : 2; // right button pan by default. Set to null to disable panning
-    options.disableNativeContextMenu = typeof options.disableNativeContextMenu === "boolean" ? options.disableNativeContextMenu : true; // really only useful when panButton = 0
-    this.options = options;
+    // The syntax used here is extremely important! Using the string literals in reference to the options object as it's
+    // passed in ensures that those options will be specifiable by the user. Internally, they will be renamed by Closure.
+    // So the user passes in options[containerId] = "myContainer", and the result might be that internally o.a = "myContainer".
+    var processedOptions = {};
+    processedOptions.containerId = options["containerId"] || "makeItZoom";
+    processedOptions.maxZoomScale = options["maxZoomScale"] || 1.0;
+    processedOptions.minZoomScale = options["minZoomScale"] || 0.1;
+    processedOptions.zoomSpeed = options["zoomSpeed"] || 2.0;
+    processedOptions.zoomTowardMouse = options["zoomTowardMouse"] !== false; // Zoom centers around mouse cursor by default, (0,0) if false
+    processedOptions.panButton = typeof options["panButton"] != "undefined" ? options.panButton : 2; // right button pan by default. Set to null to disable panning
+    processedOptions.disableNativeContextMenu = typeof options["disableNativeContextMenu"] === "boolean" ? options.disableNativeContextMenu : true; // really only useful when panButton = 0
+    this.options = processedOptions;
 
-    this.container = document.getElementById(options.containerId);
+    this.container = document.getElementById(processedOptions.containerId);
 
     this.width = this.container.offsetWidth;
     this.height = this.container.offsetHeight;
@@ -35,6 +39,10 @@ makeItZoom.prototype.init = function(options){
     this.importDOM.call(this,this.container);
 
     this.render();
+};
+
+makeItZoom.prototype.getContainer = function(){
+    return this.container;
 };
 
 makeItZoom.prototype.importDOM =function(container){
@@ -86,9 +94,9 @@ makeItZoom.prototype.render = function(){
     // Dispatch an event with the new center and scale:
     var renderEvent = new CustomEvent('mz_render');
     renderEvent["mz_center_x"] = this.controls.object.position.x;
-    renderEvent["mz_center_y"] = this.controls.object.position.y;
     renderEvent["mz_scale"] = this.controls.currentZoomScale;
     this.container.dispatchEvent(renderEvent);
+    renderEvent["mz_center_y"] = this.controls.object.position.y;
 };
 
 makeItZoom.prototype._addZoomable = function(element, offset){
@@ -153,3 +161,14 @@ makeItZoom.prototype.zoomTo = function(x,y,scale){
     this.controls.setScale(scale);
     this.controls.update(true);
 };
+
+// Prevent Closure from removing makeItZoom's public API:
+window["makeItZoom"] = makeItZoom;
+makeItZoom.prototype["addZoomable"] = makeItZoom.prototype.addZoomable;
+makeItZoom.prototype["removeZoomable"] = makeItZoom.prototype.removeZoomable;
+makeItZoom.prototype["zoomTo"] = makeItZoom.prototype.zoomTo;
+makeItZoom.prototype["getCurrentScale"] = makeItZoom.prototype.getCurrentScale;
+makeItZoom.prototype["getOffset"] = makeItZoom.prototype.getOffset;
+makeItZoom.prototype["getContainer"] = makeItZoom.prototype.getContainer;
+
+
