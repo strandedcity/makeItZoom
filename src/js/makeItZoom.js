@@ -23,7 +23,6 @@ makeItZoom.prototype.init = function(options){
     this.height = this.container.offsetHeight;
 
     this.camera = new THREE.PerspectiveCamera( 70, this.width / this.height, 1, 1000000 );
-    this.camera.position.z = 1200;
     this.scene = new THREE.Scene();
 
     // CSS scene handles standard DOM elements and styling, such as <input> fields, drop-downs, etc.
@@ -35,6 +34,7 @@ makeItZoom.prototype.init = function(options){
     this.render = this.render.bind(this);
 
     this.attachControls();
+    this.controls.setScale(1);
 
     this.importDOM.call(this,this.container);
 
