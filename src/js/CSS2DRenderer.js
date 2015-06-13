@@ -1,9 +1,11 @@
 /**
+ * CSS2DRenderer for MakeItZoom Based on CSS2DRenderer for Three.js
  * Based on http://www.emagix.net/academic/mscs-project/item/camera-sync-with-css3-and-webgl-threejs
  * @author mrdoob / http://mrdoob.com/
+ * Rewritten for MakeItZoom by @aStrandedCity / http://strandedcity.com
  */
 
-THREE.CSS3DObject = function ( element ) {
+THREE.CSS2DObject = function ( element ) {
 
 	THREE.Object3D.call( this );
 
@@ -22,23 +24,15 @@ THREE.CSS3DObject = function ( element ) {
 
 };
 
-THREE.CSS3DObject.prototype = Object.create( THREE.Object3D.prototype );
-
-THREE.CSS3DSprite = function ( element ) {
-
-	THREE.CSS3DObject.call( this, element );
-
-};
-
-THREE.CSS3DSprite.prototype = Object.create( THREE.CSS3DObject.prototype );
+THREE.CSS2DObject.prototype = Object.create( THREE.Object3D.prototype );
 
 //
 
-THREE.CSS3DRenderer = function (element) {
+THREE.CSS2DRenderer = function (element) {
 	var _width, _height;
 	var _widthHalf, _heightHalf;
 
-	var matrix = new THREE.Matrix4();
+//	var matrix = new THREE.Matrix4();
 	
 	var cache = {
 		camera: { fov: 0, style: '' },
@@ -143,7 +137,7 @@ THREE.CSS3DRenderer = function (element) {
 
 	var renderObject = function ( object, camera ) {
 
-		if ( object instanceof THREE.CSS3DObject ) {
+		if ( object instanceof THREE.CSS2DObject ) {
 
 			var style;
 

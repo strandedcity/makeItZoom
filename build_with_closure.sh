@@ -14,7 +14,7 @@ java -jar compiler.jar \
         src/threejs_files/Camera.js \
         src/threejs_files/PerspectiveCamera.js \
         src/threejs_files/Scene.js \
-        src/js/CSS3DRenderer.js \
+        src/js/CSS2DRenderer.js \
         src/js/OrbitControls.js \
         src/js/makeItZoom.js \
     --js_output_file dist/makeItZoom_0.0.1.min.js \
@@ -26,7 +26,7 @@ echo "Compiling makeItZoom with Three.js dependency..."
 
 java -jar compiler.jar \
     --js \
-        src/js/CSS3DRenderer.js \
+        src/js/CSS2DRenderer.js \
         src/js/OrbitControls.js \
         src/js/makeItZoom.js \
     --js_output_file dist/makeItZoom_0.0.1_requires_three.min.js \

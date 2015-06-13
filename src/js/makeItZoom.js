@@ -26,7 +26,7 @@ makeItZoom.prototype.init = function(options){
     this.scene = new THREE.Scene();
 
     // CSS scene handles standard DOM elements and styling, such as <input> fields, drop-downs, etc.
-    this.renderer = new THREE.CSS3DRenderer();
+    this.renderer = new THREE.CSS2DRenderer();
     this.renderer.setSize( this.width, this.height );
     document.body.appendChild( this.renderer.domElement );
     this.renderer.domElement.className = "makeitzoom_container";
@@ -101,7 +101,7 @@ makeItZoom.prototype.render = function(){
 
 makeItZoom.prototype._addZoomable = function(element, offset){
 
-    var cssObject = new THREE.CSS3DObject( element );
+    var cssObject = new THREE.CSS2DObject( element );
     cssObject.position.x = offset.left;
     cssObject.position.y =  offset.top;
     cssObject.position.z = 0;
