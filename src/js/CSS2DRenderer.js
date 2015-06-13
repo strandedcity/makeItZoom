@@ -31,10 +31,13 @@ THREE.CSS2DObject.prototype = Object.create( THREE.Object3D.prototype );
 THREE.CSS2DRenderer = function (element) {
 	var _width, _height;
 	var _widthHalf, _heightHalf;
+    var _hardwareAccelerated = true;
 	
 	var cache = {
 		camera: { fov: 0, style: '' },
-		objects: {}
+		objects: {},
+        fov: 1,
+        clientHeight: 0
 	};
 
 	var domElement = document.createElement( 'div' );
@@ -50,6 +53,10 @@ THREE.CSS2DRenderer = function (element) {
 	this.setClearColor = function () {
 
 	};
+
+    this.setIsHardwareAccelerated = function(hardwareAccelerated){
+        _hardwareAccelerated = hardwareAccelerated;
+    };
 
 	this.setSize = function ( width, height ) {
 
@@ -117,8 +124,10 @@ THREE.CSS2DRenderer = function (element) {
 
 		camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
-        var style = "scale("+this.getCurrentZoomScale(camera,domElement)+") ";
-        style += "translate("+(-camera.position.x)+"px,"+camera.position.y+"px)";
+        var style =
+            " scale("+this.getCurrentZoomScale(camera,domElement)+")" +
+            " translate("+(-camera.position.x)+"px,"+camera.position.y+"px)" +
+            (_hardwareAccelerated ? " translate3d(0,0,0)" : "");
 
 		if ( cache.camera.style !== style ) {
 

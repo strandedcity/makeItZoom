@@ -15,6 +15,7 @@ makeItZoom.prototype.init = function(options){
     processedOptions.zoomTowardMouse = options["zoomTowardMouse"] !== false; // Zoom centers around mouse cursor by default, (0,0) if false
     processedOptions.panButton = typeof options["panButton"] != "undefined" ? options.panButton : 2; // right button pan by default. Set to null to disable panning
     processedOptions.disableNativeContextMenu = typeof options["disableNativeContextMenu"] === "boolean" ? options.disableNativeContextMenu : true; // really only useful when panButton = 0
+    processedOptions.hardwareAccelerated = options["hardwareAccelerated"] !== false; // Hardware acceleration will be used if available by default
     this.options = processedOptions;
 
     this.container = document.getElementById(processedOptions.containerId);
@@ -28,6 +29,7 @@ makeItZoom.prototype.init = function(options){
     // CSS scene handles standard DOM elements and styling, such as <input> fields, drop-downs, etc.
     this.renderer = new THREE.CSS2DRenderer();
     this.renderer.setSize( this.width, this.height );
+    this.renderer.setIsHardwareAccelerated(processedOptions.hardwareAccelerated);
     document.body.appendChild( this.renderer.domElement );
     this.renderer.domElement.className = "makeitzoom_container";
 
