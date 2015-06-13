@@ -16,6 +16,7 @@ makeItZoom.prototype.init = function(options){
     processedOptions.panButton = typeof options["panButton"] != "undefined" ? options.panButton : 2; // right button pan by default. Set to null to disable panning
     processedOptions.disableNativeContextMenu = typeof options["disableNativeContextMenu"] === "boolean" ? options.disableNativeContextMenu : true; // really only useful when panButton = 0
     processedOptions.hardwareAccelerated = options["hardwareAccelerated"] !== false; // Hardware acceleration will be used if available by default
+    processedOptions.fullScreen = options["fullScreen"] === true; // Fullscreen is OFF by default
     this.options = processedOptions;
 
     this.container = document.getElementById(processedOptions.containerId);
@@ -41,6 +42,33 @@ makeItZoom.prototype.init = function(options){
     this.importDOM.call(this,this.container);
 
     this.render();
+
+    this.setFullScreen(processedOptions.fullScreen);
+};
+
+makeItZoom.prototype.setFullScreen = function(on){
+    var that = this;
+
+    function onWindowResize(){
+        that.container.style.width = window.innerWidth;
+        that.container.style.height = window.innerHeight;
+        that.width = that.container.offsetWidth;
+        that.height = that.container.offsetHeight;
+
+        that.camera.aspect = window.innerWidth / window.innerHeight;
+        that.camera.updateProjectionMatrix();
+
+        that.renderer.setSize( window.innerWidth, window.innerHeight );
+
+        that.render();
+    }
+
+    if (on === true) {
+        onWindowResize();
+        window.addEventListener( 'resize', onWindowResize, false );
+    } else {
+        window.removeEventListener( 'resize', onWindowResize, false );
+    }
 };
 
 makeItZoom.prototype.getContainer = function(){
