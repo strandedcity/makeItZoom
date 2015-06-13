@@ -31,8 +31,6 @@ THREE.CSS2DObject.prototype = Object.create( THREE.Object3D.prototype );
 THREE.CSS2DRenderer = function (element) {
 	var _width, _height;
 	var _widthHalf, _heightHalf;
-
-//	var matrix = new THREE.Matrix4();
 	
 	var cache = {
 		camera: { fov: 0, style: '' },
@@ -43,19 +41,9 @@ THREE.CSS2DRenderer = function (element) {
     if (!!element) {domElement = element;}
 	domElement.style.overflow = 'hidden';
 
-//	domElement.style.WebkitTransformStyle = 'preserve-3d';
-//	domElement.style.MozTransformStyle = 'preserve-3d';
-//	domElement.style.oTransformStyle = 'preserve-3d';
-//	domElement.style.transformStyle = 'preserve-3d';
-
 	this.domElement = domElement;
 
 	var cameraElement = document.createElement( 'div' );
-
-//	cameraElement.style.WebkitTransformStyle = 'preserve-3d';
-//	cameraElement.style.MozTransformStyle = 'preserve-3d';
-//	cameraElement.style.oTransformStyle = 'preserve-3d';
-//	cameraElement.style.transformStyle = 'preserve-3d';
 
 	domElement.appendChild( cameraElement );
 
@@ -79,71 +67,11 @@ THREE.CSS2DRenderer = function (element) {
 
 	};
 
-	var epsilon = function ( value ) {
-
-		return Math.abs( value ) < 0.000001 ? 0 : value;
-
-	};
-
-	var getCameraCSSMatrix = function ( matrix ) {
-        return 'scale(' + this.currentZoomScale + ')';
-//		var elements = matrix.elements;
-//
-//		return 'matrix3d(' +
-//			epsilon( elements[ 0 ] ) + ',' +
-//			epsilon( - elements[ 1 ] ) + ',' +
-//			epsilon( elements[ 2 ] ) + ',' +
-//			epsilon( elements[ 3 ] ) + ',' +
-//			epsilon( elements[ 4 ] ) + ',' +
-//			epsilon( - elements[ 5 ] ) + ',' +
-//			epsilon( elements[ 6 ] ) + ',' +
-//			epsilon( elements[ 7 ] ) + ',' +
-//			epsilon( elements[ 8 ] ) + ',' +
-//			epsilon( - elements[ 9 ] ) + ',' +
-//			epsilon( elements[ 10 ] ) + ',' +
-//			epsilon( elements[ 11 ] ) + ',' +
-//			epsilon( elements[ 12 ] ) + ',' +
-//			epsilon( - elements[ 13 ] ) + ',' +
-//			epsilon( elements[ 14 ] ) + ',' +
-//			epsilon( elements[ 15 ] ) +
-//		')';
-
-	};
-
-	var getObjectCSSMatrix = function ( matrix ) {
-		var elements = matrix.elements;
-
-		return '';//translate3d(-50%,-50%,0)';
-//        matrix3d(' +
-//			epsilon( elements[ 0 ] ) + ',' +
-//			epsilon( elements[ 1 ] ) + ',' +
-//			epsilon( elements[ 2 ] ) + ',' +
-//			epsilon( elements[ 3 ] ) + ',' +
-//			epsilon( - elements[ 4 ] ) + ',' +
-//			epsilon( - elements[ 5 ] ) + ',' +
-//			epsilon( - elements[ 6 ] ) + ',' +
-//			epsilon( - elements[ 7 ] ) + ',' +
-//			epsilon( elements[ 8 ] ) + ',' +
-//			epsilon( elements[ 9 ] ) + ',' +
-//			epsilon( elements[ 10 ] ) + ',' +
-//			epsilon( elements[ 11 ] ) + ',' +
-//			epsilon( elements[ 12 ] ) + ',' +
-//			epsilon( elements[ 13 ] ) + ',' +
-//			epsilon( elements[ 14 ] ) + ',' +
-//			epsilon( elements[ 15 ] ) +
-//		')';
-
-	};
-
 	var renderObject = function ( object, camera ) {
 
 		if ( object instanceof THREE.CSS2DObject ) {
 
-			var style;
-
-			{
-                style = getObjectCSSMatrix( object.matrixWorld );
-			}
+			var style ='';
 
 			var element = object.element;
 			var cachedStyle = cache.objects[ object.id ];
@@ -180,14 +108,7 @@ THREE.CSS2DRenderer = function (element) {
 		var fov = 0.5 / Math.tan( THREE.Math.degToRad( camera.fov * 0.5 ) ) * _height;
 
 		if ( cache.camera.fov !== fov ) {
-
-//			domElement.style.WebkitPerspective = fov + "px";
-//			domElement.style.MozPerspective = fov + "px";
-//			domElement.style.oPerspective = fov + "px";
-//			domElement.style.perspective = fov + "px";
-
 			cache.camera.fov = fov;
-
 		}
 
 		scene.updateMatrixWorld();
@@ -196,11 +117,7 @@ THREE.CSS2DRenderer = function (element) {
 
 		camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
-        var currentZoomScale = this.getCurrentZoomScale(camera,domElement);
-
-//		var style = "translate3d(0,0," + fov + "px)" + getCameraCSSMatrix( camera.matrixWorldInverse ) +
-//			" translate3d(" + _widthHalf + "px," + _heightHalf + "px, 0)";
-        var style = "scale("+currentZoomScale+") ";
+        var style = "scale("+this.getCurrentZoomScale(camera,domElement)+") ";
         style += "translate("+(-camera.position.x)+"px,"+camera.position.y+"px)";
 
 		if ( cache.camera.style !== style ) {
@@ -211,7 +128,6 @@ THREE.CSS2DRenderer = function (element) {
 			cameraElement.style.transform = style;
 			cache.camera.style = style;
 
-//            console.log(fov,camera.matrixWorldInverse.elements[14]);
 		}
 
 		renderObject( scene, camera );
