@@ -68,7 +68,17 @@
             position: absolute;
         }
     </style>
-    <script type="text/javascript" src="../src/js/three.min.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Three.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Vector2.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Vector3.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Quaternion.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Matrix4.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/EventDispatcher.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Math.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Object3D.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Camera.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/PerspectiveCamera.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Scene.js"></script>
 
     <script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>
     <script type="text/javascript" src="../src/js/OrbitControls.js"></script>
@@ -102,7 +112,7 @@
         });
 
         zoomInstance.getContainer().addEventListener("mz_render",function(e){
-            //console.log('render event', e.mz_scale, e.mz_center_x, e.mz_center_y)
+            console.log('render event', e.mz_scale, e.mz_center_x, e.mz_center_y)
         });
 
         // Drag-and-drop is easy to implement with any library of your choosing. The one catch is that most drag-and-drop
