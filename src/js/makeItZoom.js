@@ -114,6 +114,10 @@ makeItZoom.prototype.attachControls = function(){
             // prevent the context menu, treat the right click as a regular mousedown event
             event.preventDefault();
         }, false );
+        this.container.addEventListener( 'contextmenu', function ( event ) {
+            // prevent the context menu, treat the right click as a regular mousedown event
+            event.preventDefault();
+        }, false );
     }
 
     this.controls.addEventListener( 'change', this.render );
