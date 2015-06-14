@@ -43,22 +43,22 @@
             vertical-align: middle;
         }
         .hello {
-            font-size: 200px;
+            font-size: 13px;
             color: magenta;
-            width: 700px;
-            height: 300px;
-            line-height: 300px;
-            margin-top: -150px;
-            margin-left: -350px;
+            width: 90px;
+            height: 0px;
+            line-height: 13px;
+            margin-top: -26px;
+            margin-left: -110px;
         }
         .zoom {
-            font-size: 3000px;
+            font-size: 180px;
             color: cyan;
-            width: 18000px;
-            height: 4000px;
-            margin-top: -2240px;
-            line-height: 4000px;
-            margin-left: -8060px;
+            width: 1000px;
+            height: 450px;
+            margin-top: -260px;
+            line-height: 450px;
+            margin-left: -510px;
         }
     </style>
 </head>
@@ -78,8 +78,8 @@
         var zoomInstance = new makeItZoom({
             containerId: "makeItZoom",
             zoomSpeed: 3,
-            maxZoomScale: 1,
-            minZoomScale: 0.05,
+            maxZoomScale: 20,
+            minZoomScale: 1,
             hardwareAccelerated: false, // for simple animations with vector graphics, CPU rendering can look cleaner
             fullScreen: true
         });
@@ -94,9 +94,9 @@
 
             function getParamsAtPercent(percent){
                 return {
-                    x: 0,
-                    y: 0,
-                    zoom: 1 - 0.95 * percent
+                    x: -67 ,
+                    y: 20,
+                    zoom: 20 - 19.5 * percent
                 }
             }
 
@@ -129,7 +129,7 @@
             // Button that controls animating or manual use
             document.getElementById("manualToggle").addEventListener("click",function(){
                 autoZoom = !autoZoom;
-                this.innerText = (autoZoom ? "Manual" : "Auto")
+                this.textContent = (autoZoom ? "Manual" : "Auto")
             });
         }(zoomInstance));
     </script>
