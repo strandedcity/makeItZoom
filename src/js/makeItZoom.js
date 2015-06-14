@@ -35,6 +35,7 @@ makeItZoom.prototype.init = function(options){
     this.container.parentNode.insertBefore( this.renderer.domElement, this.container );
     this.container.parentNode.insertBefore(this.container, this.renderer.domElement);
     this.renderer.domElement.className = "makeitzoom_container";
+    this.renderer.domElement.style.position = "absolute";
 
     this.render = this.render.bind(this);
 
