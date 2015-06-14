@@ -6,7 +6,7 @@
     <style type="text/css">
         body {
             margin: 0;
-            background-color: whitesmoke;
+            background-color: lightcoral;
         }
 
         #makeItZoom {
@@ -19,47 +19,82 @@
         }
         textarea {
             font-family: 'Droid Sans', sans-serif;
-            position: relative;
             display: inline-block;
-            margin: 20px;
             text-align: center;
             vertical-align: middle;
             line-height: 10px;
-            border-radius: 5px;
             outline: none;
             box-sizing: border-box;
             cursor: pointer;
-            padding: 20px;
+            padding: 10px;
             font-size: 10px;
-            resize: vertical;
+            font-weight: bold;
+            resize: none;
+            border: 3px solid #FFF;
             width: 120px;
+            height: 120px;
         }
     </style>
 </head>
 <body>
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
-    <div id="makeItZoomable" class="zoomContainer">
-      <textarea>START HERE</textarea>
-      <textarea>1</textarea>
-      <textarea>2</textarea>
-      <textarea>3</textarea>
-      <textarea>4</textarea>
-      <textarea>5</textarea>
+    <div id="makeItZoom" class="zoomContainer">
     </div>
 
      <!--Initialize makeItZoom() at bottom of page, or inside $.ready() or similar-->
-    <script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>
+    <!--<script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>-->
+    <script type="text/javascript" src="../src/threejs_files/Three.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Vector2.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Vector3.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Quaternion.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Matrix4.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/EventDispatcher.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Math.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Object3D.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Camera.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/PerspectiveCamera.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Scene.js"></script>
+
+    <script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>
+    <script type="text/javascript" src="../src/js/OrbitControls.js"></script>
+    <script type="text/javascript" src="../src/js/makeItZoom.js"></script>
+
+    <script type="text/javascript" src="../src/js/interact-1.2.4.min.js"></script>
+
     <script type="text/javascript">
         // You can start by initializing the zoom container
         var zoomInstance = new makeItZoom({
             containerId: "makeItZoom",
             zoomSpeed: 3,
-            maxZoomScale: 20,
-            minZoomScale: 1,
+            maxZoomScale: 1,
+            minZoomScale: 0.1,
             hardwareAccelerated: false, // for simple animations with vector graphics, CPU rendering can look cleaner
             fullScreen: true,
-            disableNativeContextMenu: false
+//            disableNativeContextMenu: false
         });
+
+        function randomBright(){
+            return Math.round(100 + Math.random() * 75);
+        }
+
+        var loremipsum = ("Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ex massa, venenatis nec eros nec, ornare imperdiet nulla. Donec in erat tincidunt, posuere lacus maximus, porta nibh. Nam dolor orci, suscipit at dolor non, dignissim consequat sapien. Ut ut massa et enim consectetur tempus. Duis non eleifend orci, eu imperdiet ex. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam in blandit ex. Proin varius urna a congue vestibulum. Sed convallis sem turpis, quis bibendum nunc commodo non. Ut quis ligula at ligula pellentesque congue quis ut odio. Nam sed ex nunc. Mauris tristique lorem a purus lobortis, vitae pellentesque nisl sodales. Sed eget aliquam est, faucibus vestibulum nunc. Aenean cursus ante quam, eu sagittis arcu tincidunt auctor. Proin convallis efficitur enim non malesuada. Morbi nec tellus mattis elit pellentesque ornare. Sed vehicula orci dolor, quis interdum lorem finibus vel. Interdum et malesuada fames ac ante ipsum primis in faucibus.").split(" ");
+        function randomWords(){
+            var index = Math.round(Math.random()*(loremipsum.length-20));
+            return loremipsum.slice(index,index + Math.round(Math.random()*10) + 1).join(" ");
+        }
+
+        var container = document.getElementById("makeItZoom");
+        for (var i=0; i<100; i++){
+            // Create a textarea with some random text, coloring, and positioning
+            var ta = document.createElement("textarea");
+            ta.style.backgroundColor = "rgb("+randomBright()+","+randomBright()+","+randomBright()+")";
+            ta.innerText = randomWords();
+
+            document.body.appendChild(ta);
+
+            // Add the text area to the zoomable container:
+            zoomInstance.addZoomable(ta,{left: 200 * (Math.round(Math.random()*40) - 20), top: 200 * (Math.round(Math.random()*30) - 15)});
+        }
     </script>
 </body>
 </html>
