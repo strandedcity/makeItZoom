@@ -3,48 +3,71 @@
 <head>
     <title>makeItZoom.js - Easy ZUIs</title>
     <style type="text/css">
-        /*Styling is for the benefit of the demo only*/
         body {
             margin: 0;
-
+            background-color: black;
         }
         div {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
-        .zoomContainer {
-            width: 100%;
-            height: 100%;
+        #manualToggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 140px;
+            height: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 40px;
+            border: 1px solid white;
+            cursor: pointer;
+            outline: none;
+            background-color: black;
+            color: yellow;
+        }
+        #makeItZoom {
+            margin: 0;
             position: absolute;
             top: 0;
             left: 0;
-        }
-        .box {
-            position: relative;
-            display: inline-block;
-            margin: 30px;
-            width: 400px;
-            height: 400px;
-            border-radius: 30px;
-            background-color: #dddddd;
-            text-align: center;
-            vertical-align: middle;
-            line-height: 360px;
-            box-shadow: 2px 2px 10px #999;
-            border: 5px solid #EEE;
-
-        }
-        .makeitzoom_container {
             width: 100%;
             height: 100%;
+        }
+        .textdiv {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             position: absolute;
+            display: block;
+            top: 50%;
+            left: 50%;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .hello {
+            font-size: 200px;
+            color: magenta;
+            width: 700px;
+            height: 300px;
+            line-height: 300px;
+            margin-top: -150px;
+            margin-left: -350px;
+        }
+        .zoom {
+            font-size: 3000px;
+            color: cyan;
+            width: 18000px;
+            height: 4000px;
+            margin-top: -2000px;
+            line-height: 4000px ;
         }
     </style>
 </head>
 <body>
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
     <div id="makeItZoom" class="zoomContainer">
-      <div class="box">This zooms</div>
+      <div class="textdiv hello">Hello,</div>
+      <div class="textdiv zoom">Zoooooom!</div>
     </div>
+
+    <button id="manualToggle">Manual</button>
 
     <!-- Initialize makeItZoom() at bottom of page, or inside $.ready() or similar -->
     <script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>
@@ -52,10 +75,62 @@
         // You can start by initializing the zoom container
         var zoomInstance = new makeItZoom({
             containerId: "makeItZoom",
-            zoomSpeed: 3
+            zoomSpeed: 3,
+            maxZoomScale: 1,
+            minZoomScale: 0.05,
+            hardwareAccelerated: false,
+            fullScreen: true
         });
 
-        console.warn("Look at initial position and scale, and browser resize events!!");
+        // Demo Code is wrapped in a self-executing function, only the zoom instance is passed in
+        (function(instance){
+            // For the purposes of the demo, a very simple animation loop:
+            var frameNumber = 0,
+                movingFrames = 40,
+                stillFrames = 75,
+                direction = 1,
+                autoZoom = true;
+
+            function getParamsAtPercent(percent){
+                return {
+                    x: 0 + 7685 * percent,
+                    y: 0,
+                    zoom: 1 - 0.95 * percent
+                }
+            }
+
+            function nextFrame(){
+                // 0% for stillFrames, then advance for movingFrames, then 100% for stillFrames,
+                // then advance backwards for movingFrames
+
+                if (!autoZoom) return;
+
+                var percent = 0;
+                if (frameNumber > stillFrames && frameNumber < stillFrames + movingFrames) {
+                    percent = (frameNumber - stillFrames) / movingFrames;
+                } else if (frameNumber >= stillFrames + movingFrames && frameNumber < stillFrames * 2 + movingFrames) {
+                    percent = 1;
+                } else if (frameNumber >= stillFrames * 2 + movingFrames && frameNumber < stillFrames * 2 + movingFrames * 2) {
+                    percent = 1 - (frameNumber - 2*stillFrames - movingFrames) / movingFrames;
+                } else if (frameNumber >= stillFrames * 2 + movingFrames * 2) {
+                    // reset
+                    frameNumber = 0;
+                }
+
+                frameNumber+=1;
+                var params = getParamsAtPercent(percent);
+                instance.zoomTo(params.x,params.y,params.zoom);
+            }
+
+            // Begin animation
+            setInterval(nextFrame, 15);
+
+            // Button that controls animating or manual use
+            document.getElementById("manualToggle").addEventListener("click",function(){
+                autoZoom = !autoZoom;
+                this.innerText = (autoZoom ? "Manual" : "Auto")
+            });
+        }(zoomInstance));
     </script>
 </body>
 </html>

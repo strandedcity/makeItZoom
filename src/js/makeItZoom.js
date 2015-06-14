@@ -31,7 +31,8 @@ makeItZoom.prototype.init = function(options){
     this.renderer = new THREE.CSS2DRenderer();
     this.renderer.setSize( this.width, this.height );
     this.renderer.setIsHardwareAccelerated(processedOptions.hardwareAccelerated);
-    document.body.appendChild( this.renderer.domElement );
+    this.container.parentNode.insertBefore( this.renderer.domElement, this.container );
+    this.container.parentNode.insertBefore(this.container, this.renderer.domElement);
     this.renderer.domElement.className = "makeitzoom_container";
 
     this.render = this.render.bind(this);
