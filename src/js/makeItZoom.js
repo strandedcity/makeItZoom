@@ -128,7 +128,7 @@ makeItZoom.prototype.render = function(){
     renderEvent["mz_scale"] = this.controls.currentZoomScale;
     renderEvent["mz_center_x"] = this.controls.object.position.x;
     renderEvent["mz_center_y"] = this.controls.object.position.y;
-    this.container.dispatchEvent(renderEvent);
+    this.dispatchEvent(renderEvent);
 };
 
 makeItZoom.prototype._addZoomable = function(element, offset){
@@ -193,6 +193,8 @@ makeItZoom.prototype.zoomTo = function(x,y,scale){
     this.controls.setScale(scale);
     this.controls.update(true);
 };
+
+THREE.EventDispatcher.prototype.apply( makeItZoom.prototype );
 
 // Prevent Closure from removing makeItZoom's public API:
 window["makeItZoom"] = makeItZoom;

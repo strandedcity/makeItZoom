@@ -10,10 +10,10 @@ THREE.EventDispatcher.prototype = {
 
 	apply: function ( object ) {
 
-		object.addEventListener = THREE.EventDispatcher.prototype.addEventListener;
-		object.hasEventListener = THREE.EventDispatcher.prototype.hasEventListener;
-		object.removeEventListener = THREE.EventDispatcher.prototype.removeEventListener;
-		object.dispatchEvent = THREE.EventDispatcher.prototype.dispatchEvent;
+		object["addEventListener"] = THREE.EventDispatcher.prototype.addEventListener;
+		object["hasEventListener"] = THREE.EventDispatcher.prototype.hasEventListener;
+		object["removeEventListener"] = THREE.EventDispatcher.prototype.removeEventListener;
+		object["dispatchEvent"] = THREE.EventDispatcher.prototype.dispatchEvent;
 
 	},
 

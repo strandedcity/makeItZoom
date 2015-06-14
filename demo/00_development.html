@@ -111,7 +111,7 @@
             console.log('context menu!', e.clientX, e.clientY, e.target);
         });
 
-        zoomInstance.getContainer().addEventListener("mz_render",function(e){
+        zoomInstance.addEventListener("mz_render",function(e){
             console.log('render event', e.mz_scale, e.mz_center_x, e.mz_center_y)
         });
 
