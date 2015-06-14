@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>makeItZoom.js - Easy ZUIs</title>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
     <style type="text/css">
         body {
             margin: 0;
@@ -33,7 +34,7 @@
             height: 100%;
         }
         .textdiv {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: 'Droid Sans', sans-serif;
             position: absolute;
             display: block;
             top: 50%;
@@ -55,8 +56,9 @@
             color: cyan;
             width: 18000px;
             height: 4000px;
-            margin-top: -2000px;
-            line-height: 4000px ;
+            margin-top: -2240px;
+            line-height: 4000px;
+            margin-left: -8060px;
         }
     </style>
 </head>
@@ -64,7 +66,7 @@
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
     <div id="makeItZoom" class="zoomContainer">
       <div class="textdiv hello">Hello,</div>
-      <div class="textdiv zoom">Zoooooom!</div>
+      <div class="textdiv zoom">Zooooom!</div>
     </div>
 
     <button id="manualToggle">Manual</button>
@@ -78,7 +80,7 @@
             zoomSpeed: 3,
             maxZoomScale: 1,
             minZoomScale: 0.05,
-            hardwareAccelerated: false,
+            hardwareAccelerated: false, // for simple animations with vector graphics, CPU rendering can look cleaner
             fullScreen: true
         });
 
@@ -88,12 +90,11 @@
             var frameNumber = 0,
                 movingFrames = 40,
                 stillFrames = 75,
-                direction = 1,
                 autoZoom = true;
 
             function getParamsAtPercent(percent){
                 return {
-                    x: 0 + 7685 * percent,
+                    x: 0,
                     y: 0,
                     zoom: 1 - 0.95 * percent
                 }
@@ -123,7 +124,7 @@
             }
 
             // Begin animation
-            setInterval(nextFrame, 15);
+            setInterval(nextFrame, 20);
 
             // Button that controls animating or manual use
             document.getElementById("manualToggle").addEventListener("click",function(){
