@@ -1,22 +1,4 @@
 
-//CustomEvent Polyfill for ie9+
-//See https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
-(function () {
-    if (window["CustomEvent"] !== "undefined") return;
-
-    function CustomEvent ( event, params ) {
-        params = params || { bubbles: false, cancelable: false, detail: undefined };
-        var evt = document.createEvent( "CustomEvent" );
-        evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-        return evt;
-    }
-
-    CustomEvent.prototype = window.Event.prototype;
-
-    // Syntax for closure's sake
-    window["CustomEvent"] = CustomEvent;
-})();
-
 function makeItZoom(){
     var options = arguments[0] || {};
     this.init(options);
