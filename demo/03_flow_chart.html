@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>makeItZoom.js - Easy ZUIs</title>
+    <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+        body {
+            margin: 0;
+            background-color: whitesmoke;
+        }
+
+        #makeItZoom {
+            margin: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        textarea {
+            font-family: 'Droid Sans', sans-serif;
+            position: relative;
+            display: inline-block;
+            margin: 20px;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 10px;
+            border-radius: 5px;
+            outline: none;
+            box-sizing: border-box;
+            cursor: pointer;
+            padding: 20px;
+            font-size: 10px;
+            resize: vertical;
+            width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
+    <div id="makeItZoomable" class="zoomContainer">
+      <textarea>START HERE</textarea>
+      <textarea>1</textarea>
+      <textarea>2</textarea>
+      <textarea>3</textarea>
+      <textarea>4</textarea>
+      <textarea>5</textarea>
+    </div>
+
+     <!--Initialize makeItZoom() at bottom of page, or inside $.ready() or similar-->
+    <script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>
+    <script type="text/javascript">
+        // You can start by initializing the zoom container
+        var zoomInstance = new makeItZoom({
+            containerId: "makeItZoom",
+            zoomSpeed: 3,
+            maxZoomScale: 20,
+            minZoomScale: 1,
+            hardwareAccelerated: false, // for simple animations with vector graphics, CPU rendering can look cleaner
+            fullScreen: true,
+            disableNativeContextMenu: false
+        });
+    </script>
+</body>
+</html>
