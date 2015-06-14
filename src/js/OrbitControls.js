@@ -7,37 +7,6 @@
  */
 /*global THREE, console */
 
-// This set of controls performs orbiting, dollying (zooming), and panning. It maintains
-// the "up" direction as +Y, unlike the TrackballControls. Touch on tablet and phones is
-// supported.
-//
-//    Orbit - left mouse / touch: one finger move
-//    Zoom - middle mouse, or mousewheel / touch: two finger spread or squish
-//    Pan - right mouse, or arrow keys / touch: three finter swipe
-//
-// This is a drop-in replacement for (most) TrackballControls used in examples.
-// That is, include this js file and wherever you see:
-//    	controls = new THREE.TrackballControls( camera );
-//      controls.target.z = 150;
-// Simple substitute "OrbitControls" and the control should work as-is.
-
-// CustomEvent Polyfill for ie9+
-// See https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent
-//(function () {
-//    if (window.CustomEvent !== "undefined") return;
-//
-//    function CustomEvent ( event, params ) {
-//        params = params || { bubbles: false, cancelable: false, detail: undefined };
-//        var evt = document.createEvent( 'CustomEvent' );
-//        evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-//        return evt;
-//    }
-//
-//    CustomEvent.prototype = window.Event.prototype;
-//
-//    window.CustomEvent = CustomEvent;
-//})();
-
 THREE.OrbitControls = function ( object, domElement ) {
 
 	this.object = object;
