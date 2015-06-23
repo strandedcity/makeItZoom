@@ -22,28 +22,29 @@ makeItZoom.prototype.init = function(options){
 
     this.container = document.getElementById(processedOptions.containerId);
 
+    // remove each element from the passed-in container, recording its current offset
+    // positions for when it gets added back after the scene is created
+    var existingElements = this.cacheElements.call(this,this.container);
+
     this.width = this.container.offsetWidth;
     this.height = this.container.offsetHeight;
 
     this.camera = new THREE.PerspectiveCamera( 70, this.width / this.height, 1, 1000000 );
     this.scene = new THREE.Scene();
 
+    // put back all the elements the user set up that were removed at the beginning
+    this.replaceElements.call(this,existingElements);
+
     // CSS scene handles standard DOM elements and styling, such as <input> fields, drop-downs, etc.
-    this.renderer = new THREE.CSS2DRenderer();
+    this.renderer = new THREE.CSS2DRenderer(this.container);
     this.renderer.setSize( this.width, this.height );
     this.renderer.setIsHardwareAccelerated(processedOptions.hardwareAccelerated);
-    this.container.parentNode.insertBefore( this.renderer.domElement, this.container );
-    this.container.parentNode.insertBefore(this.container, this.renderer.domElement);
-    this.renderer.domElement.className = "makeitzoom_container";
     this.renderer.domElement.style.position = "absolute";
 
     this.render = this.render.bind(this);
 
     this.attachControls();
     this.controls.setScale(1);
-
-    this.importDOM.call(this,this.container);
-
     this.render();
 
     this.setFullScreen(processedOptions.fullScreen);
@@ -78,18 +79,54 @@ makeItZoom.prototype.getContainer = function(){
     return this.container;
 };
 
-makeItZoom.prototype.importDOM =function(container){
-    // Must loop over children twice to find their offsets, then move them into the right container
-    // If children are positioned using DOM flow to begin with, they will pile on top of
-    // each other as they are removed from the dom rather than maintaining correct relative positions
-    // Solution: store offsets, then convert to CSS3D Objects
-    var that = this;
+makeItZoom.prototype.cacheElements = function(container){
+    var that = this,
+        elements = [];
+
+    console.warn("Can I use getComputedStyle? Is there a Polyfill?");
+
     this.childElementIterator(container,function(child){
-        child.mzOffset = that.getOffset(child);
+        var offset = that.getOffset(child),
+            wasRelativelyPositioned = getComputedStyle(child).position === "relative";
+
+        if (wasRelativelyPositioned) {
+            child.mzOffset = offset;
+        }
+        elements.push(child);
     });
-    this.childElementIterator(container,function(child){
-        that._addZoomable.call(that,child,child.mzOffset);
-    });
+    for (var i=0; i<elements.length; i++){
+        var child = elements[i];
+
+        container.removeChild(child);
+        if (child.mzOffset) {
+
+            // If we were relatively positioned coming in, all the then-current offsets were recorded
+            // Now it's time to keep each object in the same position, but position them absolutely.
+            child.style.position = "absolute";
+            child.style.top = child.mzOffset.top + "px";
+            child.style.left = child.mzOffset.left + "px";
+        }
+    }
+    return elements;
+};
+
+makeItZoom.prototype.replaceElements = function(elements){
+    for (var i=0; i<elements.length; i++){
+        var child = elements[i];
+        this._addZoomable.call(this,child,child.mzOffset);
+    }
+};
+
+makeItZoom.prototype._addZoomable = function(element, offset){
+
+    var cssObject = new THREE.CSS2DObject( element );
+    if (offset) {
+        cssObject.element.style.left = offset.left + "px";
+        cssObject.element.style.top =  offset.top + "px";
+    }
+    cssObject.position.z = 0;
+
+    this.scene.add(cssObject);
 };
 
 makeItZoom.prototype.childElementIterator = function(parent,childCallback){
@@ -130,16 +167,6 @@ makeItZoom.prototype.render = function(){
     renderEvent["mz_center_x"] = this.controls.object.position.x;
     renderEvent["mz_center_y"] = this.controls.object.position.y;
     this.dispatchEvent(renderEvent);
-};
-
-makeItZoom.prototype._addZoomable = function(element, offset){
-
-    var cssObject = new THREE.CSS2DObject( element );
-    cssObject.position.x = offset.left;
-    cssObject.position.y =  offset.top;
-    cssObject.position.z = 0;
-
-    this.scene.add(cssObject);
 };
 
 makeItZoom.prototype.addZoomable = function(element, offset){

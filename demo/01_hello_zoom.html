@@ -42,28 +42,51 @@
             vertical-align: middle;
         }
         .hello {
-            font-size: 13px;
-            color: magenta;
-            width: 90px;
-            height: 0px;
-            line-height: 13px;
-            margin-top: -26px;
-            margin-left: -110px;
+font-size: 13px;
+  color: magenta;
+  width: 100px;
+  height: 50px;
+  text-align: center;
+  line-height: 50px;
+  margin-top: -10px;
+  margin-left: -115px;
+  top: 50%;
+  left: 50%;
+            position: absolute;
         }
         .zoom {
-            font-size: 180px;
-            color: cyan;
-            width: 1000px;
-            height: 450px;
-            margin-top: -260px;
-            line-height: 450px;
-            margin-left: -510px;
+  font-size: 180px;
+  color: cyan;
+  width: 1000px;
+  height: 150px;
+  margin-top: -75px;
+  line-height: 150px;
+  margin-left: -510px;
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  vertical-align: middle;
         }
     </style>
+        <script type="text/javascript" src="../src/threejs_files/Three.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Vector2.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Vector3.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Quaternion.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Matrix4.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/EventDispatcher.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Math.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Object3D.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Camera.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/PerspectiveCamera.js"></script>
+    <script type="text/javascript" src="../src/threejs_files/Scene.js"></script>
+
+    <script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>
+    <script type="text/javascript" src="../src/js/OrbitControls.js"></script>
+    <script type="text/javascript" src="../src/js/makeItZoom.js"></script>
 </head>
 <body>
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
-    <div id="makeItZoom" class="zoomContainer">
+    <div id="makeItZoom">
       <div class="textdiv hello">Hello,</div>
       <div class="textdiv zoom">Zooooom!</div>
     </div>
@@ -71,7 +94,7 @@
     <button id="manualToggle">Manual</button>
 
     <!-- Initialize makeItZoom() at bottom of page, or inside $.ready() or similar -->
-    <script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>
+    <!--<script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>-->
     <script type="text/javascript">
         // You can start by initializing the zoom container
         var zoomInstance = new makeItZoom({
@@ -93,8 +116,8 @@
 
             function getParamsAtPercent(percent){
                 return {
-                    x: -67 ,
-                    y: 20,
+                    x: -67,
+                    y: -15,
                     zoom: 20 - 19.5 * percent
                 }
             }

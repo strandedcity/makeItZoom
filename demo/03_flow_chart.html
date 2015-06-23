@@ -38,7 +38,7 @@
 </head>
 <body>
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
-    <div id="makeItZoom" class="zoomContainer">
+    <div id="makeItZoom">
     </div>
 
      <!--Initialize makeItZoom() at bottom of page, or inside $.ready() or similar-->
@@ -68,9 +68,7 @@
             zoomSpeed: 3,
             maxZoomScale: 1,
             minZoomScale: 0.1,
-            hardwareAccelerated: false, // for simple animations with vector graphics, CPU rendering can look cleaner
-            fullScreen: true,
-//            disableNativeContextMenu: false
+            fullScreen: true
         });
 
         function randomBright(){

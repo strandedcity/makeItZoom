@@ -78,8 +78,8 @@ THREE.CSS2DRenderer = function (element) {
 
 		if ( object instanceof THREE.CSS2DObject ) {
 
-            var matrixElements = object.matrixWorld.elements;  // 12,13 --> x, y
-			var style =' matrix(1,0,0,1,'+matrixElements[12]+','+matrixElements[13]+')';
+            //var matrixElements = object.matrixWorld.elements;  // 12,13 --> x, y
+			var style = '';//' matrix(1,0,0,1,'+matrixElements[12]+','+matrixElements[13]+')';
 
 			var element = object.element;
 			var cachedStyle = cache.objects[ object.id ];
