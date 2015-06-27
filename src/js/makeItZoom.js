@@ -83,12 +83,10 @@ makeItZoom.prototype.cacheElements = function(container){
     var that = this,
         elements = [];
 
-    console.warn("Can I use getComputedStyle? Is there a Polyfill?");
-
     this.childElementIterator(container,function(child){
         var offset = that.getOffset(child),
-            wasRelativelyPositioned = getComputedStyle(child).position === "relative";
-
+            positioning = getComputedStyle(child).getPropertyValue("position"),
+            wasRelativelyPositioned = positioning === "relative" || positioning === "static";
         if (wasRelativelyPositioned) {
             child.mzOffset = offset;
         }
@@ -221,6 +219,14 @@ makeItZoom.prototype.zoomTo = function(x,y,scale){
     this.controls.setScale(scale);
     this.controls.update(true);
 };
+
+// These getters are NOT protected from Closure renaming, purposely.
+// There are two versions of makeItZoom:
+// 1) Fully Minified, no threejs dependency, no shared objects. These variables will be renamed, as will all their properties. So there's no use getting them.
+// 2) Simply Minified, depends on threejs, shares objects such as camera, scene, and renderer. Could be useful to have access from outside, so that a webgl scene could be overlaid / aligned with the CSS scene
+makeItZoom.prototype.getScene = function(){return this.scene;};
+makeItZoom.prototype.getCamera = function(){return this.camera;};
+makeItZoom.prototype.getRenderer = function(){return this.renderer;};
 
 THREE.EventDispatcher.prototype.apply( makeItZoom.prototype );
 
