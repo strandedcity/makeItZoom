@@ -35,6 +35,7 @@
             left: 0;
         }
         #bigForm {
+            background-color: lightcoral;
             position: absolute;
             display: block;
             width: 5000px;
@@ -89,7 +90,8 @@
 
         // You can start by initializing the zoom container
         var zoomInstance = new makeItZoom({
-            hardwareAccelerated: true
+            hardwareAccelerated: true,
+            bounds: {left: -100, top: -100, bottom: 600, right: 5100}
         });
         window.zoomInstance = zoomInstance;
 

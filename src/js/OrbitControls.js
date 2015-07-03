@@ -35,6 +35,9 @@ THREE.OrbitControls = function ( object, domElement ) {
     this.maxZoomScale = 1;
 	this.currentZoomScale = 1;
 
+    // Bounds let the user set a container in which zoom and pan are possible.
+    this.bounds = null;
+
 	// Set to true to disable this control
 	this.panButton = 2; // right drag to pan by default
 	this.noPan = false;
@@ -96,6 +99,39 @@ THREE.OrbitControls = function ( object, domElement ) {
             targetZ = fov/sc;
 
         scale = targetZ / this.object.position.z;
+    };
+
+    this.setMaxZoomScale = function(max){this.maxZoomScale = max;};
+    this.setMinZoomScale = function(min){
+        if (this.bounds === null) this.minZoomScale = min;
+        else this.minZoomScale = this.calculateMinZoomScaleFromBounds(this.bounds);
+    };
+    this.calculateMinZoomScaleFromBounds = function(bounds){
+        var minHorizontal = this.domElement.clientWidth / (bounds.right - bounds.left),
+            minVertical = this.domElement.clientHeight / (bounds.bottom - bounds.top);
+
+        return Math.min(minHorizontal,minVertical);
+    };
+    this.validateBounds = function(bounds){
+        if (bounds == null || typeof bounds != "object") return false;
+        if (
+                typeof bounds.top != "number" ||
+                typeof bounds.left != "number" ||
+                typeof bounds.bottom != "number" ||
+                typeof bounds.right != "number"
+            ) {
+            console.warn("Invalid bounds object specified.");
+            return false;
+        }
+        return true;
+    };
+    this.setBounds = function(bounds){
+        if (this.validateBounds(bounds) === true) {
+            this.bounds = bounds;
+            this.setMinZoomScale(1);
+        } else {
+            this.bounds = null;
+        }
     };
 
 	// pass in distance in world space to move left
@@ -198,10 +234,29 @@ THREE.OrbitControls = function ( object, domElement ) {
         var distance = - camera.position.z / dir.z;
 
         return camera.position.clone().add( dir.multiplyScalar( distance ) );
-    }
+    };
 
-	this.update = function (skipRecentering) {
+    this.unprojectScreenPoint = function (camera,point){
+        var vector = new THREE.Vector3();
+        vector.set(
+            ( point.x / scope.domElement.clientWidth ) * 2 - 1,
+            - ( point.y / scope.domElement.clientHeight ) * 2 + 1,
+            0.5 );
 
+        var domElementSize = new THREE.Vector3();
+        domElementSize.set(scope.domElement.clientWidth/2, -scope.domElement.clientHeight/2,0);
+
+        vector.unproject( camera );
+        var dir = vector.sub( camera.position ).normalize();
+
+        var distance = - camera.position.z / dir.z;
+
+        return camera.position.clone().add( dir.multiplyScalar( distance )).add(domElementSize);
+    };
+
+	this.update = function (skipRecentering, skipBoundsCheck) {
+
+        var adjustmentsMade = false;
         var mousePositionPreZoom;
         if (scope.recenterCursor) mousePositionPreZoom = scope.unproject(this.object).clone();
 
@@ -218,15 +273,15 @@ THREE.OrbitControls = function ( object, domElement ) {
 		// so we can query it from outside at any point:
 		scope.currentZoomScale = fov/offset.z;
 
-		// move target to panned location
+
+		// Apply and then clear the offset and scale transforms:
 		this.target.add( pan );
-
 		position.copy( this.target ).add( offset );
-
 		scale = 1;
 		pan.set( 0, 0, 0 );
 
         if (scope.recenterCursor === true && skipRecentering !== true) {
+            adjustmentsMade = true;
             scope.recenterCursor = false;
             // This is normally done in the renderer, but since we're including
             // a "pan" whose amount depends on the future location of the mouse
@@ -236,11 +291,65 @@ THREE.OrbitControls = function ( object, domElement ) {
 
             scope.panLeft(diff.x);
             scope.panUp(-diff.y);
+        }
 
-            // Re-run the update with the additional (dependent) pan motion
-            // that will offset the un-centering caused by the zoom.
-            scope.update();
-            return;
+        // Lastly, check bounds!
+        // Before adding PAN to the current camera position, verify that pan will result in a valid in-bounds position. Correct it if not
+        // Check bounds. Must be done after all other calculations,
+        // since another update() cycle is required to fix positioning
+
+        if (scope.bounds !== null && skipBoundsCheck !== true) {
+            var deltaX = 0, deltaY = 0;
+
+
+            // offset = the position that's about to be rendered,
+            // offset = the difference in position between the TARGET (x,y info for current projection) and POSITION (of camera)
+            // position = the position that was rendered previously
+
+            // PAN = the yet-to-be-applied difference in x,y
+            // On every render iteration, PAN and RADIUS/OFFSET are collected as diffs then applied to the camera position
+
+            //console.log(offset.z,position.z);
+            // Figure out if this new camera position is inside the valid cone of positions based on user-set bounds:
+
+            // vertical first:
+            var verticalViewFromOffsetPosition = offset.z * Math.tan(THREE.Math.degToRad(this.object.fov * 0.5)),
+                horizontalViewFromOffsetPosition = verticalViewFromOffsetPosition * (this.domElement.clientWidth/this.domElement.clientHeight);
+
+            // Enforce top bound
+            var topVisiblePosition = verticalViewFromOffsetPosition - ( this.domElement.clientHeight/ 2 - scope.bounds.top);
+            if (topVisiblePosition + (position.y + pan.y) > 0) {
+                deltaY += -(topVisiblePosition+position.y);
+            }
+
+            // enforce left bound
+            if (horizontalViewFromOffsetPosition -  this.domElement.clientWidth/2 + scope.bounds.left - position.x-pan.x > 0) {
+                deltaX += (horizontalViewFromOffsetPosition - ( this.domElement.clientWidth/2 - scope.bounds.left) - position.x);
+            }
+
+            // Enforce bottom bound
+            if (verticalViewFromOffsetPosition - position.y - pan.y - this.domElement.clientHeight/2 > scope.bounds.bottom) {
+                deltaY += verticalViewFromOffsetPosition - position.y - scope.bounds.bottom - this.domElement.clientHeight/2;
+            }
+
+            // enforce right bound
+            if (horizontalViewFromOffsetPosition + position.x + pan.x + this.domElement.clientWidth/2 > scope.bounds.right) {
+                deltaX += scope.bounds.right - this.domElement.clientWidth/2 - position.x - horizontalViewFromOffsetPosition;
+            }
+
+            if (deltaX !== 0 || deltaY !== 0) {
+                adjustmentsMade = true;
+                pan.set(deltaX,deltaY,0);
+            }
+        }
+
+        if (adjustmentsMade) {
+            // Apply the pan transform again. We've adjusted to keep the mouse pointer
+            // above the same spot in the scene
+            this.target.add( pan );
+            position.copy( this.target ).add( offset );
+            pan.set( 0, 0, 0 );
+            scale = 1;
         }
 
 		// update condition is:

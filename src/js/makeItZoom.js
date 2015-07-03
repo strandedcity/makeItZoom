@@ -18,6 +18,7 @@ makeItZoom.prototype.init = function(options){
     processedOptions.disableNativeContextMenu = typeof options["disableNativeContextMenu"] === "boolean" ? options.disableNativeContextMenu : true; // really only useful when panButton = 0
     processedOptions.hardwareAccelerated = options["hardwareAccelerated"] !== false; // Hardware acceleration will be used if available by default
     processedOptions.fullScreen = options["fullScreen"] === true; // Fullscreen is OFF by default
+    processedOptions.bounds = options["bounds"] || null;
     this.options = processedOptions;
 
     this.container = document.getElementById(processedOptions.containerId);
@@ -137,11 +138,12 @@ makeItZoom.prototype.childElementIterator = function(parent,childCallback){
 };
 
 makeItZoom.prototype.attachControls = function(){
-    var that = this;
     this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
     this.controls.zoomSpeed = this.options.zoomSpeed;
-    this.controls.minZoomScale = this.options.minZoomScale;
-    this.controls.maxZoomScale = this.options.maxZoomScale;
+    this.controls.setMinZoomScale(this.options.minZoomScale);
+    this.controls.setMaxZoomScale(this.options.maxZoomScale);
+    this.controls.setBounds(this.options.bounds);
+
     this.controls.zoomTowardMouse = this.options.zoomTowardMouse;
     this.controls.panButton = this.options.panButton;
 
@@ -239,4 +241,5 @@ makeItZoom.prototype["getCurrentScale"] = makeItZoom.prototype.getCurrentScale;
 makeItZoom.prototype["getOffset"] = makeItZoom.prototype.getOffset;
 makeItZoom.prototype["getContainer"] = makeItZoom.prototype.getContainer;
 
+// TODO: getCurrentCenter, getCurrentBounds
 
