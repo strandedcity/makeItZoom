@@ -113,24 +113,37 @@ THREE.OrbitControls = function ( object, domElement ) {
         return Math.min(minHorizontal,minVertical);
     };
     this.validateBounds = function(bounds){
-        if (bounds == null || typeof bounds != "object") return false;
-        if (
-                typeof bounds.top != "number" ||
-                typeof bounds.left != "number" ||
-                typeof bounds.bottom != "number" ||
-                typeof bounds.right != "number"
-            ) {
-            console.warn("Invalid bounds object specified.");
-            return false;
+        function isNumber(obj){
+            return toString.call(obj) === '[object Number]';
         }
-        return true;
+
+        if (bounds == null || typeof bounds != "object") return null;
+
+        var boundNames = ["top","left","bottom","right"],
+            boundSigns = [-1,-1,1,1],
+            atLeastOneSpecified = false,
+            normalizedBounds = {};
+
+        for (var i=0; i<boundNames.length; i++){
+            if (isNumber(bounds[boundNames[i]])) {
+                atLeastOneSpecified = true;
+            }
+            normalizedBounds[boundNames[i]] = isNumber(bounds[boundNames[i]]) ? bounds[boundNames[i]] : boundSigns[i] * Infinity;
+        }
+
+        if (!atLeastOneSpecified) {
+            // When user defines a bounds object but fails to define any legitimate bounds, show a console error
+            THREE.warn("Invalid bounds object specified.");
+            return null;
+        }
+
+        return normalizedBounds;
     };
     this.setBounds = function(bounds){
-        if (this.validateBounds(bounds) === true) {
-            this.bounds = bounds;
+        var normalizedBounds = this.validateBounds(bounds);
+        this.bounds = normalizedBounds;
+        if (normalizedBounds !== null) {
             this.setMinZoomScale(1);
-        } else {
-            this.bounds = null;
         }
     };
 
