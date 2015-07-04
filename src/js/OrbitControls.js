@@ -312,29 +312,47 @@ THREE.OrbitControls = function ( object, domElement ) {
             //console.log(offset.z,position.z);
             // Figure out if this new camera position is inside the valid cone of positions based on user-set bounds:
 
-            // vertical first:
-            var verticalViewFromOffsetPosition = offset.z * Math.tan(THREE.Math.degToRad(this.object.fov * 0.5)),
-                horizontalViewFromOffsetPosition = verticalViewFromOffsetPosition * (this.domElement.clientWidth/this.domElement.clientHeight);
+            // Set up some variables to store the current window as viewed through the camera
+            var h2 = this.domElement.clientHeight/ 2,
+                w2 = this.domElement.clientWidth/2,
+                aspectRatio = w2 / h2,
+                verticalViewFromOffsetPosition = offset.z * Math.tan(THREE.Math.degToRad(this.object.fov * 0.5)),
+                horizontalViewFromOffsetPosition = verticalViewFromOffsetPosition * aspectRatio;
 
             // Enforce top bound
-            var topVisiblePosition = verticalViewFromOffsetPosition - ( this.domElement.clientHeight/ 2 - scope.bounds.top);
-            if (topVisiblePosition + (position.y + pan.y) > 0) {
-                deltaY += -(topVisiblePosition+position.y);
+            if (verticalViewFromOffsetPosition - h2 + position.y + pan.y > -scope.bounds.top) {
+                deltaY +=
+                    - verticalViewFromOffsetPosition
+                    - scope.bounds.top
+                    + h2
+                    - position.y;
             }
 
             // enforce left bound
-            if (horizontalViewFromOffsetPosition -  this.domElement.clientWidth/2 + scope.bounds.left - position.x-pan.x > 0) {
-                deltaX += (horizontalViewFromOffsetPosition - ( this.domElement.clientWidth/2 - scope.bounds.left) - position.x);
+            if (- horizontalViewFromOffsetPosition + w2 + position.x + pan.x < scope.bounds.left) {
+                deltaX +=
+                    horizontalViewFromOffsetPosition
+                    + scope.bounds.left
+                    - w2
+                    - position.x;
             }
 
             // Enforce bottom bound
-            if (verticalViewFromOffsetPosition - position.y - pan.y - this.domElement.clientHeight/2 > scope.bounds.bottom) {
-                deltaY += verticalViewFromOffsetPosition - position.y - scope.bounds.bottom - this.domElement.clientHeight/2;
+            if (+verticalViewFromOffsetPosition - position.y - pan.y + h2 > scope.bounds.bottom) {
+                deltaY +=
+                    + verticalViewFromOffsetPosition
+                    - scope.bounds.bottom
+                    + h2
+                    - position.y;
             }
 
             // enforce right bound
-            if (horizontalViewFromOffsetPosition + position.x + pan.x + this.domElement.clientWidth/2 > scope.bounds.right) {
-                deltaX += scope.bounds.right - this.domElement.clientWidth/2 - position.x - horizontalViewFromOffsetPosition;
+            if (horizontalViewFromOffsetPosition + position.x + pan.x + w2 > scope.bounds.right) {
+                deltaX +=
+                    - horizontalViewFromOffsetPosition
+                    + scope.bounds.right
+                    - w2
+                    - position.x;
             }
 
             if (deltaX !== 0 || deltaY !== 0) {
