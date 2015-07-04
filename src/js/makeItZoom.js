@@ -46,9 +46,11 @@ makeItZoom.prototype.init = function(options){
 
     this.attachControls();
     this.controls.setScale(1);
-    this.render();
+//    this.render();
 
     this.setFullScreen(processedOptions.fullScreen);
+
+    this.controls.update(); // triggers initial render, but also makes sure that the display conforms to bounds
 };
 
 makeItZoom.prototype.setFullScreen = function(on){

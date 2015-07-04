@@ -362,9 +362,11 @@ THREE.OrbitControls = function ( object, domElement ) {
                 if (deltaYTop !== 0 && deltaYBottom !== 0) {
                     // If both top and bottom bounds are active, just recenter the camera by using the AVERAGE correction
                     vpan /= 2;
+                    pan.setY(0); // no mouse recentering allowed
                 }
                 if (deltaXLeft !== 0 && deltaXRight !== 0) {
                     hpan /= 2;
+                    pan.setX(0); // no mouse recentering allowed
                 }
 
                 // Add back existing pan, in case the mouse centering has produced a valid value
