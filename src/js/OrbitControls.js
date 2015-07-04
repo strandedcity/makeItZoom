@@ -299,9 +299,6 @@ THREE.OrbitControls = function ( object, domElement ) {
         // since another update() cycle is required to fix positioning
 
         if (scope.bounds !== null && skipBoundsCheck !== true) {
-            var deltaX = 0, deltaY = 0;
-
-
             // offset = the position that's about to be rendered,
             // offset = the difference in position between the TARGET (x,y info for current projection) and POSITION (of camera)
             // position = the position that was rendered previously
@@ -309,8 +306,11 @@ THREE.OrbitControls = function ( object, domElement ) {
             // PAN = the yet-to-be-applied difference in x,y
             // On every render iteration, PAN and RADIUS/OFFSET are collected as diffs then applied to the camera position
 
-            //console.log(offset.z,position.z);
-            // Figure out if this new camera position is inside the valid cone of positions based on user-set bounds:
+            // Store some deltas for the bounds
+            var deltaXLeft = 0,
+                deltaYTop = 0,
+                deltaXRight = 0,
+                deltaYBottom = 0;
 
             // Set up some variables to store the current window as viewed through the camera
             var h2 = this.domElement.clientHeight/ 2,
@@ -321,7 +321,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
             // Enforce top bound
             if (verticalViewFromOffsetPosition - h2 + position.y + pan.y > -scope.bounds.top) {
-                deltaY +=
+                deltaYTop +=
                     - verticalViewFromOffsetPosition
                     - scope.bounds.top
                     + h2
@@ -330,7 +330,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
             // enforce left bound
             if (- horizontalViewFromOffsetPosition + w2 + position.x + pan.x < scope.bounds.left) {
-                deltaX +=
+                deltaXLeft +=
                     horizontalViewFromOffsetPosition
                     + scope.bounds.left
                     - w2
@@ -339,7 +339,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
             // Enforce bottom bound
             if (+verticalViewFromOffsetPosition - position.y - pan.y + h2 > scope.bounds.bottom) {
-                deltaY +=
+                deltaYBottom +=
                     + verticalViewFromOffsetPosition
                     - scope.bounds.bottom
                     + h2
@@ -348,16 +348,28 @@ THREE.OrbitControls = function ( object, domElement ) {
 
             // enforce right bound
             if (horizontalViewFromOffsetPosition + position.x + pan.x + w2 > scope.bounds.right) {
-                deltaX +=
+                deltaXRight +=
                     - horizontalViewFromOffsetPosition
                     + scope.bounds.right
                     - w2
                     - position.x;
             }
 
-            if (deltaX !== 0 || deltaY !== 0) {
+            if (deltaXLeft !== 0 || deltaYTop !== 0 || deltaXRight !== 0 || deltaYBottom !== 0) {
                 adjustmentsMade = true;
-                pan.set(deltaX,deltaY,0);
+                var vpan = deltaYTop + deltaYBottom,
+                    hpan = deltaXLeft + deltaXRight;
+                if (deltaYTop !== 0 && deltaYBottom !== 0) {
+                    // If both top and bottom bounds are active, just recenter the camera by using the AVERAGE correction
+                    vpan /= 2;
+                }
+                if (deltaXLeft !== 0 && deltaXRight !== 0) {
+                    hpan /= 2;
+                }
+
+                // Add back existing pan, in case the mouse centering has produced a valid value
+                // If the mouse centering would have put the whole mess out of bounds
+                pan.set(hpan + pan.x, vpan + pan.y, 0);
             }
         }
 
