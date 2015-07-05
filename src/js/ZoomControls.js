@@ -202,7 +202,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 		} else {
 
 			// camera neither orthographic or perspective
-			console.warn( 'WARNING: OrbitControls.js encountered an unknown camera type - pan disabled.' );
+			console.warn( 'WARNING: ZoomControls.js encountered an unknown camera type - pan disabled.' );
 
 		}
 
