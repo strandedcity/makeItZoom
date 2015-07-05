@@ -249,23 +249,23 @@ THREE.OrbitControls = function ( object, domElement ) {
         return camera.position.clone().add( dir.multiplyScalar( distance ) );
     };
 
-    this.unprojectScreenPoint = function (camera,point){
-        var vector = new THREE.Vector3();
-        vector.set(
-            ( point.x / scope.domElement.clientWidth ) * 2 - 1,
-            - ( point.y / scope.domElement.clientHeight ) * 2 + 1,
-            0.5 );
-
-        var domElementSize = new THREE.Vector3();
-        domElementSize.set(scope.domElement.clientWidth/2, -scope.domElement.clientHeight/2,0);
-
-        vector.unproject( camera );
-        var dir = vector.sub( camera.position ).normalize();
-
-        var distance = - camera.position.z / dir.z;
-
-        return camera.position.clone().add( dir.multiplyScalar( distance )).add(domElementSize);
-    };
+//    this.unprojectScreenPoint = function (camera,point){
+//        var vector = new THREE.Vector3();
+//        vector.set(
+//            ( point.x / scope.domElement.clientWidth ) * 2 - 1,
+//            - ( point.y / scope.domElement.clientHeight ) * 2 + 1,
+//            0.5 );
+//
+//        var domElementSize = new THREE.Vector3();
+//        domElementSize.set(scope.domElement.clientWidth/2, -scope.domElement.clientHeight/2,0);
+//
+//        vector.unproject( camera );
+//        var dir = vector.sub( camera.position ).normalize();
+//
+//        var distance = - camera.position.z / dir.z;
+//
+//        return camera.position.clone().add( dir.multiplyScalar( distance )).add(domElementSize);
+//    };
 
 	this.update = function (skipRecentering, skipBoundsCheck) {
 
