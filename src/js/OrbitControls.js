@@ -338,7 +338,8 @@ THREE.OrbitControls = function ( object, domElement ) {
                     - verticalViewFromOffsetPosition
                     - scope.bounds.top
                     + h2
-                    - position.y;
+                    - position.y
+                    - pan.y;
             }
 
             // enforce left bound
@@ -347,7 +348,8 @@ THREE.OrbitControls = function ( object, domElement ) {
                     horizontalViewFromOffsetPosition
                     + scope.bounds.left
                     - w2
-                    - position.x;
+                    - position.x
+                    - pan.x;
             }
 
             // Enforce bottom bound
@@ -356,7 +358,8 @@ THREE.OrbitControls = function ( object, domElement ) {
                     + verticalViewFromOffsetPosition
                     - scope.bounds.bottom
                     + h2
-                    - position.y;
+                    - position.y
+                    - pan.y;
             }
 
             // enforce right bound
@@ -365,8 +368,15 @@ THREE.OrbitControls = function ( object, domElement ) {
                     - horizontalViewFromOffsetPosition
                     + scope.bounds.right
                     - w2
-                    - position.x;
+                    - position.x
+                    - pan.x;
             }
+
+            // Cull floating point problems:
+            if (Math.abs(deltaXLeft) < 0.001) deltaXLeft = 0;
+            if (Math.abs(deltaXRight) < 0.001) deltaXRight = 0;
+            if (Math.abs(deltaYBottom) < 0.001) deltaYBottom = 0;
+            if (Math.abs(deltaYTop) < 0.001) deltaYTop = 0;
 
             if (deltaXLeft !== 0 || deltaYTop !== 0 || deltaXRight !== 0 || deltaYBottom !== 0) {
                 adjustmentsMade = true;
