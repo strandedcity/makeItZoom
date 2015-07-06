@@ -29,7 +29,7 @@ THREE.CSS2DObject.prototype = Object.create( THREE.Object3D.prototype );
 //
 
 THREE.CSS2DRenderer = function (element) {
-    var _alignment = MZ.ALIGNMENT.TOP_LEFT;
+    var _alignment = 1;
 	var _width, _height;
 	var _widthHalf, _heightHalf;
     var _hardwareAccelerated = true;
@@ -56,12 +56,12 @@ THREE.CSS2DRenderer = function (element) {
     };
 
     this.setAlignment = function(alignment) {
-        _alignment = MZ.ALIGNMENT.TOP_LEFT;
+        _alignment = 1; // TOP_LEFT by default
 
         // Could do some error-checking here, but the CSS2DRenderer is really part of makeItZoom
         // so the validation there will do it for us in this case
-        if (alignment === MZ.ALIGNMENT.CENTER) {
-            _alignment = MZ.ALIGNMENT.CENTER;
+        if (alignment === "CENTER") {
+            _alignment = 0;
         }
     };
 
@@ -135,7 +135,7 @@ THREE.CSS2DRenderer = function (element) {
         var x = -camera.position.x,
             y = camera.position.y;
 
-        if (_alignment == MZ.ALIGNMENT.TOP_LEFT) {
+        if (_alignment === 1) {
             x += _widthHalf;
             y += _heightHalf;
         }

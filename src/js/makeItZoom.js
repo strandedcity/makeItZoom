@@ -5,10 +5,6 @@ function makeItZoom(){
 }
 
 makeItZoom.prototype.init = function(options){
-    // MakeItZoom Enums...
-    window.MZ = {};
-    MZ.ALIGNMENT = {"CENTER": 0, "TOP_LEFT": 1};
-
     // The syntax used here is extremely important! Using the string literals in reference to the options object as it's
     // passed in ensures that those options will be specifiable by the user. Internally, they will be renamed by Closure.
     // So the user passes in options[containerId] = "myContainer", and the result might be that internally o.a = "myContainer".
@@ -43,7 +39,7 @@ makeItZoom.prototype.init = function(options){
 
     // CSS scene handles standard DOM elements and styling, such as <input> fields, drop-downs, etc.
     this.renderer = new THREE.CSS2DRenderer(this.container);
-    this.renderer.setAlignment(this.options.zeroAtCenter ? MZ.ALIGNMENT.CENTER : MZ.ALIGNMENT.TOP_LEFT );
+    this.renderer.setAlignment(this.options.zeroAtCenter ? "CENTER" : "TOP_LEFT" );
     this.renderer.setSize( this.width, this.height );
     this.renderer.setIsHardwareAccelerated(processedOptions.hardwareAccelerated);
     this.renderer.domElement.style.position = "absolute";
