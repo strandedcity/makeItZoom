@@ -29,6 +29,7 @@ THREE.CSS2DObject.prototype = Object.create( THREE.Object3D.prototype );
 //
 
 THREE.CSS2DRenderer = function (element) {
+    var _alignment = MZ.ALIGNMENT.TOP_LEFT;
 	var _width, _height;
 	var _widthHalf, _heightHalf;
     var _hardwareAccelerated = true;
@@ -50,12 +51,18 @@ THREE.CSS2DRenderer = function (element) {
 
 	domElement.appendChild( cameraElement );
 
-	this.setClearColor = function () {
-
-	};
-
     this.setIsHardwareAccelerated = function(hardwareAccelerated){
         _hardwareAccelerated = hardwareAccelerated;
+    };
+
+    this.setAlignment = function(alignment) {
+        _alignment = MZ.ALIGNMENT.TOP_LEFT;
+
+        // Could do some error-checking here, but the CSS2DRenderer is really part of makeItZoom
+        // so the validation there will do it for us in this case
+        if (alignment === MZ.ALIGNMENT.CENTER) {
+            _alignment = MZ.ALIGNMENT.CENTER;
+        }
     };
 
 	this.setSize = function ( width, height ) {
@@ -125,9 +132,17 @@ THREE.CSS2DRenderer = function (element) {
 
 		camera.matrixWorldInverse.getInverse( camera.matrixWorld );
 
+        var x = -camera.position.x,
+            y = camera.position.y;
+
+        if (_alignment == MZ.ALIGNMENT.TOP_LEFT) {
+            x += _widthHalf;
+            y += _heightHalf;
+        }
+
         var style =
             " scale("+this.getCurrentZoomScale(camera,domElement)+")" +
-            " translate("+(-camera.position.x)+"px,"+camera.position.y+"px)" +
+            " translate(" + x + "px," + y + "px)" +
             (_hardwareAccelerated ? " translate3d(0,0,0)" : "");
 
 		if ( cache.camera.style !== style ) {

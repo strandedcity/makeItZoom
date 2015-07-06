@@ -2,11 +2,10 @@
 <html>
 <head>
     <title>makeItZoom.js - Easy ZUIs</title>
-    <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
     <style type="text/css">
         body {
             margin: 0;
-            background-color: lightcoral;
+            overflow: hidden;
         }
 
         #makeItZoom {
@@ -30,9 +29,13 @@
             font-size: 10px;
             font-weight: bold;
             resize: none;
-            border: 3px solid #FFF;
+            border: 10px solid #CCC;
+            border-radius: 10px;
             width: 120px;
             height: 120px;
+        }
+        textarea:hover {
+            opacity: 0.5;
         }
     </style>
 </head>
@@ -41,34 +44,38 @@
     <div id="makeItZoom">
     </div>
 
-     <!--Initialize makeItZoom() at bottom of page, or inside $.ready() or similar-->
-    <!--<script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>-->
-    <script type="text/javascript" src="../src/threejs_files/Three.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Vector2.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Vector3.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Quaternion.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Matrix4.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/EventDispatcher.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Math.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Object3D.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Camera.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/PerspectiveCamera.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Scene.js"></script>
+    <!-- This example draws an aligned WebGL scene on top of the zoomable one, so threejs is required -->
+    <script type="text/javascript" src="../src/js/three.min.js"></script>
+    <!--<script type="text/javascript" src="../dist/makeItZoom_0.0.1_requires_three.min.js"></script>-->
+
+    <!--<script type="text/javascript" src="../src/threejs_files/Three.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Vector2.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Vector3.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Quaternion.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Matrix4.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/EventDispatcher.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Math.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Object3D.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Camera.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/PerspectiveCamera.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Scene.js"></script>-->
 
     <script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>
     <script type="text/javascript" src="../src/js/ZoomControls.js"></script>
     <script type="text/javascript" src="../src/js/makeItZoom.js"></script>
 
-    <script type="text/javascript" src="../src/js/interact-1.2.4.min.js"></script>
+    <!--<script type="text/javascript" src="../src/js/interact-1.2.4.min.js"></script>-->
 
     <script type="text/javascript">
         // You can start by initializing the zoom container
         var zoomInstance = new makeItZoom({
+            // hardwareAccelerated: false, // Uncomment to see the performance difference!
             containerId: "makeItZoom",
             zoomSpeed: 3,
             maxZoomScale: 1,
             minZoomScale: 0.1,
-            fullScreen: true
+            fullScreen: true,
+            zeroAtCenter: true
         });
 
         function randomBright(){
@@ -81,18 +88,66 @@
             return loremipsum.slice(index,index + Math.round(Math.random()*10) + 1).join(" ");
         }
 
-        var container = document.getElementById("makeItZoom");
-        for (var i=0; i<100; i++){
+        var container = document.getElementById("makeItZoom"),
+            nodeCount = 100,
+            positions = [];
+        for (var i=0; i<nodeCount; i++){
             // Create a textarea with some random text, coloring, and positioning
             var ta = document.createElement("textarea");
             ta.style.backgroundColor = "rgb("+randomBright()+","+randomBright()+","+randomBright()+")";
             ta.innerText = randomWords();
 
-            document.body.appendChild(ta);
+            var thisPosition = {left: 200 * (Math.round(Math.random()*40) - 20), top: 200 * (Math.round(Math.random()*30) - 15)};
+            positions.push(thisPosition);
 
             // Add the text area to the zoomable container:
-            zoomInstance.addZoomable(ta,{left: 200 * (Math.round(Math.random()*40) - 20), top: 200 * (Math.round(Math.random()*30) - 15)});
+            zoomInstance.addZoomable(ta,thisPosition);
         }
+
+        ////////////////////////
+        // Now, use threejs/webgl to draw some lines connecting these boxes for a big nodal network
+        // diagram that you couldn't browse without zooming!
+        var glScene = new THREE.Scene(),
+            glRenderer = new THREE.WebGLRenderer( { alpha: true, antialias: true}),
+            zoomRenderer = zoomInstance.getRenderer(),
+            camera = zoomInstance.getCamera(),
+            material = new THREE.LineBasicMaterial({color: 0x000000});
+
+        glRenderer.setSize(zoomRenderer.domElement.clientWidth, zoomRenderer.domElement.clientHeight);
+        document.body.appendChild(glRenderer.domElement);
+
+        // This will make the lines from the webGL scene appear ABOVE the boxes from makeItZoom
+        // glRenderer.domElement.style["pointer-events"] = "none";
+        // glRenderer.domElement.style.position = "absolute";
+
+        // Each box should be connected to one other, so on average each will get two connections
+        for (var j=0; j<nodeCount; j++){
+            var p1 = positions[j],
+                p2 = positions[Math.floor(Math.random()*nodeCount)];
+
+            // Add some connective lines
+            var geometry = new THREE.Geometry();
+            geometry.vertices.push(new THREE.Vector3(p1.left+60, p1.top-60, 0));
+            geometry.vertices.push(new THREE.Vector3(p2.left+60, p2.top-60, 0));
+
+            var line = new THREE.Line(geometry, material, THREE.LineStrip);
+
+            // IF you don't want to use {zeroAtCenter: true} for some reason, you'll need this correction
+            // for objects to be placed such that they line up with the MakeItZoom coordinates
+            // line.position.set(-glRenderer.domElement.clientWidth/2,glRenderer.domElement.clientHeight/2,0);
+
+            glScene.add(line);
+        }
+
+        glRenderer.render(glScene,camera);
+
+        // MakeItZoom controls the camera for you; you just need to render your webGL scene at the right moments
+        zoomInstance.addEventListener("mz_render",function(e){
+            // No need to worry about the numeric values passed in through "e".
+            // Just re-render the glScene -- makeItZoom shares a camera!
+            glRenderer.render(glScene,camera);
+        });
+
     </script>
 </body>
 </html>
