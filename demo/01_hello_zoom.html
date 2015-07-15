@@ -2,8 +2,17 @@
 <html>
 <head>
     <title>makeItZoom.js - Easy ZUIs</title>
-    <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
     <style type="text/css">
+        /* Separate request can cause breakages when developing locally without internet. This example really needs the font! */
+        @font-face {
+            font-family: 'Droid Sans';
+            font-style: normal;
+            font-weight: 400;
+            src: local('DroidSans-Regular'),
+            url('data:application/x-font-woff;base64,LyogbGF0aW4gKi8KQGZvbnQtZmFjZSB7CiAgZm9udC1mYW1pbHk6ICdEcm9pZCBTYW5zJzsKICBmb250LXN0eWxlOiBub3JtYWw7CiAgZm9udC13ZWlnaHQ6IDQwMDsKICBzcmM6IGxvY2FsKCdEcm9pZCBTYW5zJyksIGxvY2FsKCdEcm9pZFNhbnMnKSwgdXJsKGh0dHA6Ly9mb250cy5nc3RhdGljLmNvbS9zL2Ryb2lkc2Fucy92Ni9zLUJpeXdlVVBWMHYteVJiLWNqY2lQa192QXJocVZJWjBudjlxMDkwaE44LndvZmYyKSBmb3JtYXQoJ3dvZmYyJyk7CiAgdW5pY29kZS1yYW5nZTogVSswMDAwLTAwRkYsIFUrMDEzMSwgVSswMTUyLTAxNTMsIFUrMDJDNiwgVSswMkRBLCBVKzAyREMsIFUrMjAwMC0yMDZGLCBVKzIwNzQsIFUrMjBBQywgVSsyMjEyLCBVKzIyMTUsIFUrRTBGRiwgVStFRkZELCBVK0YwMDA7Cn0KLyogbGF0aW4gKi8KQGZvbnQtZmFjZSB7CiAgZm9udC1mYW1pbHk6ICdEcm9pZCBTYW5zJzsKICBmb250LXN0eWxlOiBub3JtYWw7CiAgZm9udC13ZWlnaHQ6IDcwMDsKICBzcmM6IGxvY2FsKCdEcm9pZCBTYW5zIEJvbGQnKSwgbG9jYWwoJ0Ryb2lkU2Fucy1Cb2xkJyksIHVybChodHRwOi8vZm9udHMuZ3N0YXRpYy5jb20vcy9kcm9pZHNhbnMvdjYvRUZwUVF5RzlHcUNyb2JYeEwtS1JNWVdpTU1aN3hMZDc5MlVMcEdFNFdfWS53b2ZmMikgZm9ybWF0KCd3b2ZmMicpOwogIHVuaWNvZGUtcmFuZ2U6IFUrMDAwMC0wMEZGLCBVKzAxMzEsIFUrMDE1Mi0wMTUzLCBVKzAyQzYsIFUrMDJEQSwgVSswMkRDLCBVKzIwMDAtMjA2RiwgVSsyMDc0LCBVKzIwQUMsIFUrMjIxMiwgVSsyMjE1LCBVK0UwRkYsIFUrRUZGRCwgVStGMDAwOwp9Cg==')
+            format('woff');
+        }
+
         body {
             margin: 0;
             background-color: black;
