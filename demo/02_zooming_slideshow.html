@@ -6,66 +6,71 @@
         /*Styling is for the benefit of the demo only*/
         body {
             margin: 0;
-
+            background-color: black;
         }
-        div {
-            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-
-            /*These are optional, your text can remain selectable if you prefer*/
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        .zoomContainer {
-            width: 100%;
-            height: 100%;
+        #makeItZoom {
+            margin: 0;
             position: absolute;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
         }
-        .box {
-            position: relative;
-            display: inline-block;
-            margin: 30px;
-            width: 400px;
-            height: 400px;
-            border-radius: 30px;
-            background-color: #dddddd;
-            text-align: center;
-            vertical-align: middle;
-            line-height: 360px;
-            box-shadow: 2px 2px 10px #999;
-            border: 5px solid #EEE;
-
-        }
-        .box.drop-target {
-            background-color: #989898;
-        }
-        .box.dropped-successfully {
-            background-color: #c8e858;
-        }
-        .child {
-            background-color: #cccccc;
-            width: 200px;
-            height: 200px;
-            display: inline-block;
-            margin: 30px;
-            position: relative;
-            vertical-align: top;
-            box-sizing: border-box;
-            line-height: 20px;
-            padding: 62px 50px;
-        }
-        .child:hover {
-            background-color: rgb(182, 182, 182);
+        .slide {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             cursor: pointer;
-        }
-        .makeitzoom_container {
-            background-color: #ffb181;
+            width: 500px;
+            height: 500px;
             position: absolute;
+            text-align: center;
+            border-radius: 2500px;
+            -moz-border-radius: 2500px;
+            -webkit-border-radius: 2500px;
+            background-color: #999999;
+            margin: -250px 0px 0px -250px;
+        }
+        .slide.big {
+            width: 1200px;
+            height: 1200px;
+            margin: -600px 0px 0px -600px;
+        ;
+        }
+        .slide .heading {
+            font-size: 100px;
+            font-weight: bold;
+            margin-top: 80px;
+        }
+        .big .heading {
+            font-size: 150px;
+            margin-top: 130px;;
+        }
+        .big .body {
+            width: 70%;
+            left: 15%;
+            margin-top: 40px;
+            font-size: 60px;
+        }
+        .slide .body {
+            font-size: 44px;
+            font-weight: lighter;
+            font-style: italic;
+            color: #555555;
+            width: 80%;
+            left: 10%;
+            position: relative;
+        }
+        .left {
+            text-align: left;
+        }
+        .slide .nextbutton {
+            font-size: 150px;
+            font-weight: bold;
+            line-height: 40px;
+            vertical-align: bottom;
+            bottom: 40px;
+            position: absolute;
+            width: 100%;
+            color: #666;
         }
     </style>
     <!--<script type="text/javascript" src="../src/js/three.min.js"></script>-->
@@ -91,100 +96,74 @@
 <body>
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
     <div id="makeItZoom">
-      <div class="box dropzone" id="contextMenuExample">This box will zoom</div>
-      <div class="box draggable">
-        <div class="child">
-          This box will zoom with its parent
+        <div class="slide" id="slide_1" position-x="0" position-y="0" size="500">
+            <div class="heading">Present!</div>
+            <div class="body">It's easy to make a Prezi-like zooming slideshow using MakeItZoom.js</div>
+            <div class="nextbutton">&rarr;</div>
         </div>
-      </div>
+        <div class="slide big" id="slide_2" position-x="700" position-y="700" size="1200">
+            <div class="heading">Make Your Mark!</div>
+            <div class="body left">1. MakeItZoom is Free</div>
+            <div class="body left">2. With WebGL, there's no problem with large graphics or jumpy transitions</div>
+            <div class="body left">3. Full Control of all your transitions</div>
+            <div class="nextbutton">&rarr;</div>
+        </div>
     </div>
 
-    <!-- Initialize makeItZoom() at bottom of page, or inside $.ready() or similar -->
+
     <script type="text/javascript">
-        // You can start by initializing the zoom container
-        var zoomInstance = new makeItZoom();
-        window.zoomInstance = zoomInstance;
 
-        // Add your own context menu handlers, and use any context menu JavaScript / HTML Framework you like
-        document.getElementById("contextMenuExample").addEventListener("mz_contextmenu",function(e){
-            console.log('context menu!', e.clientX, e.clientY, e.target);
-        });
 
-        zoomInstance.getContainer().addEventListener("mz_render",function(e){
-            console.log('render event', e.mz_scale, e.mz_center_x, e.mz_center_y)
-        });
+        var slides = document.getElementsByClassName("slide"),
+            currentSlideIndex = 0,
+            positions = [];
 
-        // Drag-and-drop is easy to implement with any library of your choosing. The one catch is that most drag-and-drop
-        // libraries also manipulate the css transform properties of the elements, so you need to prevent those properties
-        // from being overwritten. Here's an example implementation with interact.js:
-        interact('.draggable').draggable({
-            // call this function on every dragmove event
-            onmove: function(event){
-                // ignore dragging with the right mouse button
-                // TODO: Make this a function of the mouse button configuration on zoomInstance
-                if (event.button === 2) { return; }
-
-                var currZoom = zoomInstance.getCurrentScale();
-
-                var target = event.target,
-                        // keep the dragged position in the data-x/data-y attributes
-                        // NOTE: dividing by the current zoom level makes sure to keep in sync with the user's pointer!
-                        // It's even possible to zoom *during* a drag with this method
-                        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx/currZoom,
-                        y = (parseFloat(target.getAttribute('data-y')) || 0) - event.dy/currZoom;
-
-                if (!target.hasAttribute("old-transform")) {
-                    target.setAttribute("old-transform",target.style.webkitTransform || target.style.transform);
+        // Utility to loop over all the slides
+        function slideIterator(callback){
+            for (var i=0; i<slides.length; i++){
+                if (typeof callback === "function"){
+                    callback(slides[i],i);
                 }
-
-                // translate the element
-                target.style.webkitTransform =
-                        target.style.transform =
-                                'translate(' + x + 'px, ' + y + 'px) ' + target.getAttribute("old-transform");
-
-                // update the posiion attributes
-                target.setAttribute('data-x', x);
-                target.setAttribute('data-y', y);
             }
+        }
+
+        // Position all the slides in the workspace. Could easily be defined in the CSS, but then we'd have to pull position
+        // from the calculated offsets. This is more explicit.
+        slideIterator(function(slide,index){
+            var x = slide.getAttribute("position-x"),
+                y = slide.getAttribute("position-y"),
+                size = slide.getAttribute("size");
+            slide.style.left = x + "px";
+            slide.style.top = y + "px";
+            positions[index] = {x: parseInt(x), y: parseInt(y), size: parseInt(size)};
         });
 
-        // enable draggables to be dropped into this
-        interact('.dropzone').dropzone({
-            // only accept elements matching this CSS selector
-            accept: '.draggable',
-            // Require a 50% element overlap for a drop to be possible
-            overlap: 0.50,
-
-            // listen for drop related events:
-
-            ondropactivate: function (event) {
-                // add active dropzone feedback
-
-                event.relatedTarget.classList.remove('dropped-successfully');
-                event.target.classList.add('drop-active');
-            },
-            ondragenter: function (event) {
-                var draggableElement = event.relatedTarget,
-                        dropzoneElement = event.target;
-
-                // feedback the possibility of a drop
-                dropzoneElement.classList.add('drop-target');
-                draggableElement.classList.add('can-drop');
-            },
-            ondragleave: function (event) {
-                // remove the drop feedback style
-                event.target.classList.remove('drop-target');
-                event.relatedTarget.classList.remove('can-drop');
-            },
-            ondrop: function (event) {
-                event.relatedTarget.classList.add('dropped-successfully');
-            },
-            ondropdeactivate: function (event) {
-                // remove active dropzone feedback
-                event.target.classList.remove('drop-active');
-                event.target.classList.remove('drop-target');
-            }
+        // Initialize MakeItZoom.
+        var zoomInstance = new makeItZoom({
+            fullScreen: true,
+            zeroAtCenter: true
         });
+
+        // Slide "advancing" function
+        function advance(){
+            currentSlideIndex++;
+            if (currentSlideIndex > positions.length - 1) {
+                // Go back to the beginning
+                currentSlideIndex = 0;
+            }
+            var newPosition = positions[currentSlideIndex];
+
+            // TODO: Insert Tweening Here!
+            zoomInstance.zoomTo(newPosition.x,newPosition.y,500/newPosition.size);
+        }
+
+        // Attach event listeners
+        slideIterator(function(slide){
+            slide.addEventListener("mouseup",function(){
+                advance();
+            });
+        });
+
     </script>
 </body>
 </html>

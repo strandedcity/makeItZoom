@@ -220,7 +220,7 @@ makeItZoom.prototype.zoomTo = function(x,y,scale){
     if (typeof scale !== "number") {scale = currScale;}
 
     this.controls.panLeft(currX-x);
-    this.controls.panUp(y-currY);
+    this.controls.panUp(-y-currY);
     this.controls.setScale(scale);
     this.controls.update(true);
 };
