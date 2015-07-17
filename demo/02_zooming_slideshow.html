@@ -168,14 +168,17 @@
                 zoomInstance.zoomTo(currentPosition.x,currentPosition.y,currentPosition.scale);
             }
 
+            var duration = 0.5, // transition time in seconds
+                height = 500; // Height used to determine fitting an element onscreen
+
             // Tween between slides!
             currentTween = TweenLite.to(
                     currentPosition,
-                    0.5,
+                    duration,
                     {
                         x: newPosition.x,
                         y:newPosition.y,
-                        scale: 500/newPosition.size,
+                        scale: height/newPosition.size,
                         onUpdate:moveCamera
                     }
                 );
