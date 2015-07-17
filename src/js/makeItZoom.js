@@ -215,6 +215,12 @@ makeItZoom.prototype.getOffset = function(el){
 makeItZoom.prototype.getCurrentScale = function(){
     return this.controls.currentZoomScale;
 };
+makeItZoom.prototype.getCenter = function(){
+    return {
+        "x": this.camera.position.x,
+        "y": this.camera.position.y
+    };
+};
 
 makeItZoom.prototype.zoomTo = function(x,y,scale){
     var currX = this.controls.object.position.x,
@@ -247,6 +253,7 @@ makeItZoom.prototype["addZoomable"] = makeItZoom.prototype.addZoomable;
 makeItZoom.prototype["removeZoomable"] = makeItZoom.prototype.removeZoomable;
 makeItZoom.prototype["zoomTo"] = makeItZoom.prototype.zoomTo;
 makeItZoom.prototype["getCurrentScale"] = makeItZoom.prototype.getCurrentScale;
+makeItZoom.prototype["getCenter"] = makeItZoom.prototype.getCenter;
 makeItZoom.prototype["getOffset"] = makeItZoom.prototype.getOffset;
 makeItZoom.prototype["getContainer"] = makeItZoom.prototype.getContainer;
 makeItZoom.prototype["setEnableUserInteractions"] = makeItZoom.prototype.setEnableUserInteractions;

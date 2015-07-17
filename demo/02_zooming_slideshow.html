@@ -75,23 +75,25 @@
     </style>
     <!--<script type="text/javascript" src="../src/js/three.min.js"></script>-->
 
-    <script type="text/javascript" src="../src/threejs_files/Three.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Vector2.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Vector3.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Quaternion.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Matrix4.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/EventDispatcher.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Math.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Object3D.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Camera.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/PerspectiveCamera.js"></script>
-    <script type="text/javascript" src="../src/threejs_files/Scene.js"></script>
+    <!--<script type="text/javascript" src="../src/threejs_files/Three.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Vector2.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Vector3.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Quaternion.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Matrix4.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/EventDispatcher.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Math.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Object3D.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Camera.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/PerspectiveCamera.js"></script>-->
+    <!--<script type="text/javascript" src="../src/threejs_files/Scene.js"></script>-->
 
-    <script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>
-    <script type="text/javascript" src="../src/js/ZoomControls.js"></script>
-    <script type="text/javascript" src="../src/js/makeItZoom.js"></script>
-    <!--<script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>-->
-    <script type="text/javascript" src="../src/js/interact-1.2.4.min.js"></script>
+    <!--<script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>-->
+    <!--<script type="text/javascript" src="../src/js/ZoomControls.js"></script>-->
+    <!--<script type="text/javascript" src="../src/js/makeItZoom.js"></script>-->
+    <script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>
+
+    <!-- Using Greensock TweenLite to power animations between slides. See http://greensock.com/tweenlite -->
+    <script type="text/javascript" src="libs/TweenLite.min.js"></script>
 </head>
 <body>
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
@@ -112,8 +114,6 @@
 
 
     <script type="text/javascript">
-
-
         var slides = document.getElementsByClassName("slide"),
             currentSlideIndex = 0,
             positions = [];
@@ -140,13 +140,23 @@
 
         // Initialize MakeItZoom.
         var zoomInstance = new makeItZoom({
-            fullScreen: true,
-            zeroAtCenter: true,
-            enableUserInteractions: false
-        });
+                fullScreen: true,
+                zeroAtCenter: true,
+                enableUserInteractions: false
+            }),
+            currentTween = null,
+            currentPosition = {
+                x: zoomInstance.getCenter().x,
+                y: zoomInstance.getCenter().y,
+                scale: zoomInstance.getCurrentScale()
+            };
 
         // Slide "advancing" function
         function advance(){
+            // Pause the current tween if one is in progress. Creating a new tween will automatically pick up from the now-current camera position
+            // because it will pick up the starting position from currentPosition
+            if (currentTween !== null) { currentTween.pause(); }
+
             currentSlideIndex++;
             if (currentSlideIndex > positions.length - 1) {
                 // Go back to the beginning
@@ -154,8 +164,22 @@
             }
             var newPosition = positions[currentSlideIndex];
 
-            // TODO: Insert Tweening Here!
-            zoomInstance.zoomTo(newPosition.x,newPosition.y,500/newPosition.size);
+            function moveCamera(){
+                zoomInstance.zoomTo(currentPosition.x,currentPosition.y,currentPosition.scale);
+            }
+
+            // Tween between slides!
+            currentTween = TweenLite.to(
+                    currentPosition,
+                    0.5,
+                    {
+                        x: newPosition.x,
+                        y:newPosition.y,
+                        scale: 500/newPosition.size,
+                        onUpdate:moveCamera
+                    }
+                );
+
         }
 
         // Attach event listeners
