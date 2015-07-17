@@ -16,6 +16,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Set to false to disable this control
 	this.enabled = true;
+    this._enableInteractions = true;
 
 	// "target" sets the location of focus, where the control orbits around
 	// and where it pans with respect to.
@@ -722,16 +723,48 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	}
 
-	this.domElement.addEventListener( 'mousedown', onMouseDown, false );
-	this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
-	this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
+    // This function acts as a setter, but also atttaches and detaches a bunch of event listeners.
+    // Could be separated into two functions if useful, but I don't anticipate ever wanting these things
+    // out of sync with each other
+    this.enableInteractions = (function(state){
+        var element = this.domElement,
+            oldState = this._enableInteractions,
+            newState = state !== false,
+            eventMappings = {
+                // register most events just for the domelement under our control
+                "mousedown": {element: element, handler: onMouseDown},
+                "mousewheel": {element: element, handler: onMouseWheel},
+                "DOMMouseScroll": {element: element, handler: onMouseWheel},
+                "touchstart": {element: element, handler: touchstart},
+                "touchend": {element: element, handler: touchend},
+                "touchmove": {element: element, handler: touchmove},
 
-	this.domElement.addEventListener( 'touchstart', touchstart, false );
-	this.domElement.addEventListener( 'touchend', touchend, false );
-	this.domElement.addEventListener( 'touchmove', touchmove, false );
+                // window events
+                "keydown": {element: window, handler: onKeyDown}
+            },
+            action = newState !== false ? "addEventListener" : "removeEventListener";
 
-	// keydown events can interfere with editing inputs in the workspace view
-	window.addEventListener( 'keydown', onKeyDown, false );
+        // Do nothing if no change. Exception: the first run.
+        if (oldState === newState && this.__setupComplete === true) {
+            return;
+        }
+        this.__setupComplete = true;
+        this._enableInteractions = newState;
+
+        // (dis/en)able interactions
+        for (var k in eventMappings) {
+            if (eventMappings.hasOwnProperty(k)) {
+                // apply "addEventListener" or "removeEventListener" depending on which is requested
+                // Syntax for this line is a little confusing, but minimizes code duplication and conditionals
+                // that vary both for the element to which the listener is attached and whether events are being
+                // attached or detached. Each time it runs, it ends up executing a line like this:
+                // this.domElement.addEventListener.apply(this.domElement, ["mousedown",onMouseDown, false]);
+                eventMappings[k].element[action].apply(eventMappings[k].element, [k, eventMappings[k].handler, false]);
+            }
+        }
+    }).bind(this);
+
+    this.enableInteractions(this._enableInteractions);
 
 	// force an update at start
 	this.update();

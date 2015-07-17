@@ -20,6 +20,7 @@ makeItZoom.prototype.init = function(options){
     processedOptions.fullScreen = options["fullScreen"] === true; // Fullscreen is OFF by default
     processedOptions.bounds = options["bounds"] || null;
     processedOptions.zeroAtCenter = options["zeroAtCenter"] !== true; // Default puts 0,0 in the top-left corner. True puts (0,0) in the center of the zoomable area
+    processedOptions.enableUserInteractions = options["enableUserInteractions"] !== false;  // Mouse/touch/keyboard interactions are enabled by default. Set false explicitly to turn these off.
     this.options = processedOptions;
 
     this.container = document.getElementById(processedOptions.containerId);
@@ -52,6 +53,10 @@ makeItZoom.prototype.init = function(options){
     this.setFullScreen(processedOptions.fullScreen);
 
     this.controls.update(); // triggers initial render, but also makes sure that the display conforms to bounds
+};
+
+makeItZoom.prototype.setEnableUserInteractions = function(state) {
+    this.controls.enableInteractions(state);
 };
 
 makeItZoom.prototype.setFullScreen = function(on){
@@ -146,6 +151,7 @@ makeItZoom.prototype.attachControls = function(){
     this.controls.setMinZoomScale(this.options.minZoomScale);
     this.controls.setMaxZoomScale(this.options.maxZoomScale);
     this.controls.setBounds(this.options.bounds);
+    this.controls.enableInteractions(this.options.enableUserInteractions);
 
     this.controls.zoomTowardMouse = this.options.zoomTowardMouse;
     this.controls.panButton = this.options.panButton;
@@ -243,6 +249,7 @@ makeItZoom.prototype["zoomTo"] = makeItZoom.prototype.zoomTo;
 makeItZoom.prototype["getCurrentScale"] = makeItZoom.prototype.getCurrentScale;
 makeItZoom.prototype["getOffset"] = makeItZoom.prototype.getOffset;
 makeItZoom.prototype["getContainer"] = makeItZoom.prototype.getContainer;
+makeItZoom.prototype["setEnableUserInteractions"] = makeItZoom.prototype.setEnableUserInteractions;
 
 // TODO: getCurrentCenter, getCurrentBounds
 
