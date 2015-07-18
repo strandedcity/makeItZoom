@@ -7,7 +7,17 @@
         body {
             margin: 0;
             background-color: black;
+
+            /*These are optional, your text can remain selectable if you prefer*/
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
+
+        /* Because all of the zoomable objects are absolutely positioned, the container may collapse */
         #makeItZoom {
             margin: 0;
             position: absolute;
@@ -40,15 +50,17 @@
             font-weight: bold;
             margin-top: 80px;
         }
-        .big .heading {
+        .big.slide .heading {
             font-size: 150px;
             margin-top: 130px;;
         }
-        .big .body {
-            width: 70%;
-            left: 15%;
+        .big.slide .body {
             margin-top: 40px;
             font-size: 60px;
+        }
+        .big.slide .nextbutton {
+            font-size: 400px;
+            bottom: 150px;
         }
         .slide .body {
             font-size: 44px;
@@ -58,6 +70,12 @@
             width: 80%;
             left: 10%;
             position: relative;
+        }
+        .slide .body.small {
+            width: 70%;
+            left: 18%;
+            color: black;
+            font-size: 14px;
         }
         .left {
             text-align: left;
@@ -73,8 +91,6 @@
             color: #666;
         }
     </style>
-    <!--<script type="text/javascript" src="../src/js/three.min.js"></script>-->
-
     <!--<script type="text/javascript" src="../src/threejs_files/Three.js"></script>-->
     <!--<script type="text/javascript" src="../src/threejs_files/Vector2.js"></script>-->
     <!--<script type="text/javascript" src="../src/threejs_files/Vector3.js"></script>-->
@@ -98,16 +114,60 @@
 <body>
     <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
     <div id="makeItZoom">
-        <div class="slide" id="slide_1" position-x="0" position-y="0" size="500">
-            <div class="heading">Present!</div>
-            <div class="body">It's easy to make a Prezi-like zooming slideshow using MakeItZoom.js</div>
-            <div class="nextbutton">&rarr;</div>
-        </div>
         <div class="slide big" id="slide_2" position-x="700" position-y="700" size="1200">
             <div class="heading">Make Your Mark!</div>
             <div class="body left">1. MakeItZoom is Free</div>
             <div class="body left">2. With WebGL, there's no problem with large graphics or jumpy transitions</div>
             <div class="body left">3. Full Control of all your transitions</div>
+            <div class="nextbutton">&rarr;</div>
+        </div>
+
+        <div class="slide" id="slide_1" position-x="0" position-y="0" size="500">
+            <div class="heading">Present!</div>
+            <div class="body">It's easy to make a Prezi-like zooming slideshow using MakeItZoom.js</div>
+            <div class="nextbutton">&rarr;</div>
+        </div>
+        <div class="slide" id="slide_2" position-x="300" position-y="-500" size="500">
+            <div class="heading" style="  font-size: 80px; font-weight: bold; margin-top: 62px; line-height: 160px;">Design <br>Philosophy</div>
+            <div class="nextbutton">&rarr;</div>
+        </div>
+        <div class="slide " id="slide_3" position-x="-130" position-y="1020" size="500">
+            <div class="body" style="font-size: 23px; top: 107px; line-height: 40px;">
+                Web applications doing serious work frequently run out of screen real estate. MakeItZoom.js
+                gives JavaScript programmers an unlimited zooming "workspace," and includes only those tools and user
+                interactions needed to <b>Make It Zoom</b>.
+            </div>
+            <div class="nextbutton">&rarr;</div>
+        </div>
+        <div class="slide big" id="slide_4" position-x="-100" position-y="-1350" size="1200">
+            <div class="heading" style="margin-top:210px;">Playing Nice</div>
+            <div class="body">
+                MakeItZoom.js does not require jQuery or any other frameworks. When animations, drag and drop, context menus, WebGL drawing APIs, or any other
+                behaviors are necessary, you can use whichever library you already know and love.
+            </div>
+            <div class="nextbutton">&rarr;</div>
+        </div>
+
+        <div class="slide " id="slide_4b" position-x="1050" position-y="-130" size="500">
+            <div class="body" style="font-size: 23px; top: 107px; line-height: 40px;">
+                Getting started is quick. You don't need to learn all about WebGL or write your own controllers in order to have a full-featured ZUI right away. And you'll never outgrow it. Setting it up for development takes less time than Hello, World.
+            </div>
+            <div class="nextbutton">&rarr;</div>
+        </div>
+        <div class="slide big" id="slide_5" position-x="-1200" position-y="0" size="1200">
+            <div class="heading">Also</div>
+            <div class="body" style="margin-top: 280px;font-size: 40px;">It's small.</div>
+            <div class="nextbutton">&rarr;</div>
+        </div>
+        <div class="slide" id="slide_6" position-x="-700" position-y="-700" size="500">
+            <div class="heading" style="margin-top: 50px;">Try It!</div>
+            <div class="body">Working Demos:</div>
+            <p class="body small">Hello, Zoom</p>
+            <p class="body small">A Prezi-Like Slideshow with TweenLite</p>
+            <p class="body small">Multi-Nodal Network I (Combines drawing in Three.js aligned with the zooming workspace)</p>
+            <p class="body small">Multi-Nodal Network II (Makes the nodes draggable using Interact.js)</p>
+            <p class="body small">A really big HTML Form (All "vanilla" HTML components work normally, even when zoomed)</p>
+
             <div class="nextbutton">&rarr;</div>
         </div>
     </div>
@@ -116,7 +176,10 @@
     <script type="text/javascript">
         var slides = document.getElementsByClassName("slide"),
             currentSlideIndex = 0,
-            positions = [];
+            home = {x:0,y:-300,scale: 0.15},
+            duration = 0.75, // transition time in seconds
+            height = 500, // Height used to determine fitting an element onscreen,
+            positions = [{x:home.x, y:home.y, size:height/home.scale}]; // At the start of the slideshow, show an overview
 
         // Utility to loop over all the slides
         function slideIterator(callback){
@@ -135,21 +198,25 @@
                 size = slide.getAttribute("size");
             slide.style.left = x + "px";
             slide.style.top = y + "px";
-            positions[index] = {x: parseInt(x), y: parseInt(y), size: parseInt(size)};
+            positions.push({x: parseInt(x), y: parseInt(y), size: parseInt(size)});
         });
 
         // Initialize MakeItZoom.
         var zoomInstance = new makeItZoom({
                 fullScreen: true,
-                zeroAtCenter: true,
-                enableUserInteractions: false
-            }),
-            currentTween = null,
+                zeroAtCenter: true, // 0,0 will be in the top left corner by default. Inconvenient if you're trying to zoom on objects' center points
+                enableUserInteractions: false // no mousewheel/pan/drag/touch events needed for a slideshow. We'll register our own interactions if need be
+            });
+        zoomInstance.zoomTo(home.x,home.y,home.scale);
+
+        var currentTween = null,
             currentPosition = {
-                x: zoomInstance.getCenter().x,
-                y: zoomInstance.getCenter().y,
-                scale: zoomInstance.getCurrentScale()
+                x: home.x,
+                y: home.y,
+                scale: home.scale
             };
+
+
 
         // Slide "advancing" function
         function advance(){
@@ -167,9 +234,6 @@
             function moveCamera(){
                 zoomInstance.zoomTo(currentPosition.x,currentPosition.y,currentPosition.scale);
             }
-
-            var duration = 0.5, // transition time in seconds
-                height = 500; // Height used to determine fitting an element onscreen
 
             // Tween between slides!
             currentTween = TweenLite.to(
