@@ -33,6 +33,8 @@
             border-radius: 10px;
             width: 120px;
             height: 120px;
+            margin-left: -60px;
+            margin-top: -60px;
         }
         textarea:hover {
             opacity: 0.5;
@@ -64,9 +66,44 @@
     <!--<script type="text/javascript" src="../src/js/ZoomControls.js"></script>-->
     <!--<script type="text/javascript" src="../src/js/makeItZoom.js"></script>-->
 
-    <!--<script type="text/javascript" src="../src/js/interact-1.2.4.min.js"></script>-->
+    <script type="text/javascript" src="libs/interact-1.2.4.min.js"></script>
 
     <script type="text/javascript">
+
+        // This tiny Position Object lets us pass updates around from the MakeItZoom CSS Scene to the WebGL Scene.
+        // If any events library were in use here such as BackBone or jQuery, that would be a better way.
+        // Even Three.js's EventDispatcher would be a better solution here, but I want the example to demonstrate
+        // use without any dependencies.
+        function PositionObject(){
+
+            this.left = 200 * (Math.round(Math.random()*40) - 20);
+            this.top = 200 * (Math.round(Math.random()*30) - 15);
+            this.set(this.left,this.top,0);
+            this._listeners = [];
+
+            this.addListener = function(listener) {
+                this._listeners.push(listener);
+            };
+            this.updatePosition = function(top,left){
+                // this.top and this.left do NOT need to be updated. Those are used for the original possitioning of the CSS
+                // draggables, and are updated in this implementation directly by the 'onmove' function below.
+                // This is questionable architecture, but serves to make the drag and drop example dependency free for clarity
+
+                // Note also that "top" is reversed for the WebGL scene, where the coordinate system is backwards.
+                // (+y is up)
+                this.setX(left + this.left);
+                this.setY(-top + this.top);
+
+                for (var i=0; i<this._listeners.length; i++){
+                    var callback = this._listeners[i].updatePosition;
+                    if (typeof callback === "function") callback.call(this._listeners[i],this);
+                }
+            };
+        }
+        PositionObject.prototype = Object.create(THREE.Vector3.prototype);
+        PositionObject.prototype.constructor = PositionObject;
+
+
         // You can start by initializing the zoom container
         var zoomInstance = new makeItZoom({
             // hardwareAccelerated: false, // Uncomment to see the performance difference!
@@ -90,18 +127,19 @@
 
         var container = document.getElementById("makeItZoom"),
             nodeCount = 100,
-            positions = [];
+            nodes = [];
         for (var i=0; i<nodeCount; i++){
             // Create a textarea with some random text, coloring, and positioning
             var ta = document.createElement("textarea");
+            ta.className = "draggable";
             ta.style.backgroundColor = "rgb("+randomBright()+","+randomBright()+","+randomBright()+")";
             ta.innerText = randomWords();
+            ta.positionObject = new PositionObject();
+            nodes.push(ta);
 
-            var thisPosition = {left: 200 * (Math.round(Math.random()*40) - 20), top: 200 * (Math.round(Math.random()*30) - 15)};
-            positions.push(thisPosition);
-
-            // Add the text area to the zoomable container:
-            zoomInstance.addZoomable(ta,thisPosition);
+            // Add the text area to the zoomable container
+            // positionObject is a Vector3 that adds top and left properties, so makeItZoom can use it for offsets
+            zoomInstance.addZoomable(ta,ta.positionObject);
         }
 
         ////////////////////////
@@ -116,25 +154,27 @@
         glRenderer.setSize(zoomRenderer.domElement.clientWidth, zoomRenderer.domElement.clientHeight);
         document.body.appendChild(glRenderer.domElement);
 
-        // This will make the lines from the webGL scene appear ABOVE the boxes from makeItZoom
-        // glRenderer.domElement.style["pointer-events"] = "none";
-        // glRenderer.domElement.style.position = "absolute";
-
         // Each box should be connected to one other, so on average each will get two connections
         for (var j=0; j<nodeCount; j++){
-            var p1 = positions[j],
-                p2 = positions[Math.floor(Math.random()*nodeCount)];
+            var p1 = nodes[j].positionObject,
+                p2 = nodes[Math.floor(Math.random()*nodeCount)].positionObject;
+
+
 
             // Add some connective lines
             var geometry = new THREE.Geometry();
-            geometry.vertices.push(new THREE.Vector3(p1.left+60, p1.top-60, 0));
-            geometry.vertices.push(new THREE.Vector3(p2.left+60, p2.top-60, 0));
+            geometry.vertices.push(p1);
+            geometry.vertices.push(p2);
+            p1.addListener(geometry);
+            p2.addListener(geometry);
+
+            geometry.updatePosition = function(){
+                // All the work here is done, we just need to make sure the vertex buffer updates.
+                this.verticesNeedUpdate = true;
+                glRenderer.render.apply(glRenderer,[glScene,camera]);
+            };
 
             var line = new THREE.Line(geometry, material, THREE.LineStrip);
-
-            // IF you don't want to use {zeroAtCenter: true} for some reason, you'll need this correction
-            // for objects to be placed such that they line up with the MakeItZoom coordinates
-            // line.position.set(-glRenderer.domElement.clientWidth/2,glRenderer.domElement.clientHeight/2,0);
 
             glScene.add(line);
         }
@@ -146,6 +186,43 @@
             // No need to worry about the numeric values passed in through "e".
             // Just re-render the glScene -- makeItZoom shares a camera!
             glRenderer.render(glScene,camera);
+        });
+
+
+        /////////////// New code powering the draggable nodes
+        // Drag-and-drop is easy to implement with any library of your choosing. The one catch is that most drag-and-drop
+        // libraries also manipulate the css transform properties of the elements, so you need to prevent those properties
+        // from being overwritten. Here's an example implementation with interact.js:
+        interact('.draggable').draggable({
+            // call this function on every dragmove event
+            onmove: function(event){
+                // ignore dragging with the right mouse button
+                if (event.button === 2) { return; }
+
+                var currZoom = zoomInstance.getCurrentScale();
+
+                var target = event.target,
+                // keep the dragged position in the data-x/data-y attributes
+                // NOTE: dividing by the current zoom level makes sure to keep in sync with the user's pointer!
+                // It's even possible to zoom *during* a drag with this method
+                        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx/currZoom,
+                        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy/currZoom;
+
+                if (!target.hasAttribute("old-transform")) {
+                    target.setAttribute("old-transform",target.style.webkitTransform || target.style.transform);
+                }
+
+                // translate the element
+                target.style.webkitTransform =
+                        target.style.transform =
+                                'translate(' + x + 'px, ' + y + 'px) ' + target.getAttribute("old-transform");
+
+                // update the posiion attributes
+                target.setAttribute('data-x', x);
+                target.setAttribute('data-y', y);
+
+                target.positionObject.updatePosition(y,x);
+            }
         });
 
     </script>
