@@ -13,7 +13,7 @@ Web applications can now do real work, and frequently real work requires real es
 It has no dependencies. To use it, just include the script at the top of your page:
 
 ```HTML
-<script type="text/javascript" src="makeItZoom.min.js"></script>
+<script type="text/javascript" src="makeItZoom_0.0.1.min.js"></script>
 ```
 
 You can specify the DOM element that will contain the zoomable interface. All child elements will zoom. Use the class "makeItZoom", or specify your own during init. Here's some makeItZoom-able markup:
