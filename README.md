@@ -37,10 +37,10 @@ At the bottom of your page, initialize makeItZoom. Every configurable parameter 
 The browser's native context menu will be suppressed by default since dragging with the right mouse button serves as a "pan" gesture. You can change this behavior in configuration, or you can listen for a special context menu event if you're using right-click context menus. See [Events](#Events) below.
 
 #Documentation
-- [Configuration](#Configuration)
-- [Methods](#Methods)
-- [Events](#Events)
-- [Examples](#Examples)
+- [Configuration](#configuration)
+- [Methods](#methods)
+- [Events](#events)
+- [Examples](#examples)
 
 #Configuration
 |      Option   |   Default     |  Notes |
