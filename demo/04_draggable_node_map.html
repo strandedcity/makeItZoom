@@ -91,8 +91,10 @@
 
                 // Note also that "top" is reversed for the WebGL scene, where the coordinate system is backwards.
                 // (+y is up)
-                this.setX(left + this.left);
-                this.setY(-top + this.top);
+                this.left += left;
+                this.top -= top;
+                this.setX(this.left);
+                this.setY(this.top);
 
                 for (var i=0; i<this._listeners.length; i++){
                     var callback = this._listeners[i].updatePosition;
@@ -126,7 +128,7 @@
         }
 
         var container = document.getElementById("makeItZoom"),
-            nodeCount = 100,
+            nodeCount = 2,
             nodes = [];
         for (var i=0; i<nodeCount; i++){
             // Create a textarea with some random text, coloring, and positioning
@@ -135,6 +137,11 @@
             ta.style.backgroundColor = "rgb("+randomBright()+","+randomBright()+","+randomBright()+")";
             ta.innerText = randomWords();
             ta.positionObject = new PositionObject();
+            ta.positionObject.addListener(ta);
+            ta.updatePosition = function(pos){
+                this.style.top = -pos.top + "px";
+                this.style.left = pos.left + "px";
+            };
             nodes.push(ta);
 
             // Add the text area to the zoomable container
@@ -202,26 +209,10 @@
                 var currZoom = zoomInstance.getCurrentScale();
 
                 var target = event.target,
-                // keep the dragged position in the data-x/data-y attributes
-                // NOTE: dividing by the current zoom level makes sure to keep in sync with the user's pointer!
-                // It's even possible to zoom *during* a drag with this method
-                        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx/currZoom,
-                        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy/currZoom;
-
-                if (!target.hasAttribute("old-transform")) {
-                    target.setAttribute("old-transform",target.style.webkitTransform || target.style.transform);
-                }
-
-                // translate the element
-                target.style.webkitTransform =
-                        target.style.transform =
-                                'translate(' + x + 'px, ' + y + 'px) ' + target.getAttribute("old-transform");
-
-                // update the posiion attributes
-                target.setAttribute('data-x', x);
-                target.setAttribute('data-y', y);
-
-                target.positionObject.updatePosition(y,x);
+                    deltaY = event.dy/currZoom,
+                    deltaX = event.dx/currZoom;
+                
+                target.positionObject.updatePosition( deltaY, deltaX);
             }
         });
 
