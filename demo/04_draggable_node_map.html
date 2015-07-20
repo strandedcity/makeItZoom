@@ -42,163 +42,95 @@
     </style>
 </head>
 <body>
-    <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
-    <div id="makeItZoom">
-    </div>
+<!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
+<div id="makeItZoom">
+</div>
 
-    <!-- This example draws an aligned WebGL scene on top of the zoomable one, so threejs is required -->
-    <script type="text/javascript" src="libs/three.min.js"></script>
-    <script type="text/javascript" src="../dist/makeItZoom_0.0.1_requires_three.min.js"></script>
+<!-- This example draws an aligned WebGL scene on top of the zoomable one, so threejs is required -->
+<script type="text/javascript" src="libs/three.min.js"></script>
+<script type="text/javascript" src="../dist/makeItZoom_0.0.1_requires_three.min.js"></script>
 
-    <!--<script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>-->
-    <!--<script type="text/javascript" src="../src/js/ZoomControls.js"></script>-->
-    <!--<script type="text/javascript" src="../src/js/makeItZoom.js"></script>-->
+<!--<script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>-->
+<!--<script type="text/javascript" src="../src/js/ZoomControls.js"></script>-->
+<!--<script type="text/javascript" src="../src/js/makeItZoom.js"></script>-->
 
-    <script type="text/javascript" src="libs/interact-1.2.4.min.js"></script>
+<script type="text/javascript" src="libs/interact-1.2.4.min.js"></script>
 
-    <script type="text/javascript">
+<script type="text/javascript" src="03_setup.js"></script>
 
-        // This tiny Position Object lets us pass updates around from the MakeItZoom CSS Scene to the WebGL Scene.
-        // If any events library were in use here such as BackBone or jQuery, that would be a better way.
-        // Even Three.js's EventDispatcher would be a better solution here, but I want the example to demonstrate
-        // use without any dependencies.
-        function PositionObject(){
+<script type="text/javascript">
+    // You can start by initializing the zoom container
+    var zoomInstance = new makeItZoom({
+        // hardwareAccelerated: false, // Uncomment to see the performance difference!
+        containerId: "makeItZoom",
+        zoomSpeed: 3,
+        maxZoomScale: 1,
+        minZoomScale: 0.1,
+        fullScreen: true,
+        zeroAtCenter: true
+    });
 
-            this.left = 200 * (Math.round(Math.random()*40) - 20);
-            this.top = 200 * (Math.round(Math.random()*30) - 15);
-            this.set(this.left,-this.top,0); // for Three.js, UP is POSITIVE
-            this._listeners = [];
+    var sceneVars = setupExample3(zoomInstance),
+        glScene = sceneVars.glScene,
+        glRenderer = sceneVars.glRenderer,
+        camera = sceneVars.camera,
+        geometries = sceneVars.geometries;
 
-            this.addListener = function(listener) {
-                this._listeners.push(listener);
-            };
-            this.updatePosition = function(deltaY,deltaX){
-                // for CSS, DOWN is POSITIVE
-                // for Three.js, UP is POSITIVE
-                // This discrepency needs to be worked out now
-                this.left += deltaX;
-                this.top += deltaY;
-                this.setX(this.left);
-                this.setY(-this.top);  // UP is POSITIVE
-                for (var i=0; i<this._listeners.length; i++){
-                    var callback = this._listeners[i].updatePosition;
-                    if (typeof callback === "function") callback.call(this._listeners[i],this);
-                }
-            };
+    ///////////////
+    // Drag-and-drop is easy to implement with any library of your choosing. The one catch is that most drag-and-drop
+    // libraries also manipulate the css transform properties of the elements, so you need to prevent those properties
+    // from being overwritten. Here's an example implementation with interact.js:
+    interact('.draggable').draggable({
+        // call this function on every dragmove event
+        onmove: function(event){
+            // ignore dragging with the right mouse button
+            if (event.button === 2) { return; }
+
+            var currZoom = zoomInstance.getCurrentScale();
+
+            var target = event.target,
+                deltaY = event.dy/currZoom,  // DOWN is POSITIVE
+                deltaX = event.dx/currZoom;
+
+            target.positionObject.updatePosition( deltaY, deltaX );
         }
-        PositionObject.prototype = Object.create(THREE.Vector3.prototype);
-        PositionObject.prototype.constructor = PositionObject;
+    });
 
+    /////////////
+    // The CSS objects must be updated as they are dragged.
+    // This could be done inside the "onmove" function above, but this "listener" model is a bit DRYer
+    var draggables = document.getElementsByClassName("draggable");
+    for (var j=0; j<draggables.length; j++){
+        var draggable = draggables[j];
 
-        // You can start by initializing the zoom container
-        var zoomInstance = new makeItZoom({
-            // hardwareAccelerated: false, // Uncomment to see the performance difference!
-            containerId: "makeItZoom",
-            zoomSpeed: 3,
-            maxZoomScale: 1,
-            minZoomScale: 0.1,
-            fullScreen: true,
-            zeroAtCenter: true
-        });
+        // Define the callback so the CSS objects can move themselves
+        draggable.updatePosition = function(pos){
+            this.style.top = pos.top + "px";
+            this.style.left = pos.left + "px";
+        };
 
-        function randomBright(){
-            return Math.round(100 + Math.random() * 75);
-        }
+        // draggable should update when its position object updates
+        draggable.positionObject.addListener(draggable);
+    }
 
-        var loremipsum = ("Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ex massa, venenatis nec eros nec, ornare imperdiet nulla. Donec in erat tincidunt, posuere lacus maximus, porta nibh. Nam dolor orci, suscipit at dolor non, dignissim consequat sapien. Ut ut massa et enim consectetur tempus. Duis non eleifend orci, eu imperdiet ex. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aliquam in blandit ex. Proin varius urna a congue vestibulum. Sed convallis sem turpis, quis bibendum nunc commodo non. Ut quis ligula at ligula pellentesque congue quis ut odio. Nam sed ex nunc. Mauris tristique lorem a purus lobortis, vitae pellentesque nisl sodales. Sed eget aliquam est, faucibus vestibulum nunc. Aenean cursus ante quam, eu sagittis arcu tincidunt auctor. Proin convallis efficitur enim non malesuada. Morbi nec tellus mattis elit pellentesque ornare. Sed vehicula orci dolor, quis interdum lorem finibus vel. Interdum et malesuada fames ac ante ipsum primis in faucibus.").split(" ");
-        function randomWords(){
-            var index = Math.round(Math.random()*(loremipsum.length-20));
-            return loremipsum.slice(index,index + Math.round(Math.random()*10) + 1).join(" ");
-        }
+    ////////////////////////////////
+    // The WebGL Scene containing connecting lines must be updated as their endpoints' positions change during drag events.
+    // Register "listeners" for each endpoint of each line
+    for (var i=0; i<geometries.length; i++){
+        var geometry = geometries[i];
 
-        var container = document.getElementById("makeItZoom"),
-            nodeCount = 100,
-            nodes = [];
-        for (var i=0; i<nodeCount; i++){
-            // Create a textarea with some random text, coloring, and positioning
-            var ta = document.createElement("textarea");
-            ta.className = "draggable";
-            ta.style.backgroundColor = "rgb("+randomBright()+","+randomBright()+","+randomBright()+")";
-            ta.innerText = randomWords();
-            ta.positionObject = new PositionObject();
-            ta.positionObject.addListener(ta);
-            ta.updatePosition = function(pos){
-                this.style.top = pos.top + "px";
-                this.style.left = pos.left + "px";
-            };
-            ta.updatePosition(ta.positionObject);
-            nodes.push(ta);
+        // In setup, the geometries' endpoints are not vanilla Vector3's. They're custom "PositionObjects" meant to keep
+        // CSS Rendered and WebGL rendered position values in sync. And they have this little passthrough mechanism built in.
+        // See 03_setup.js
+        geometry.vertices[0].addListener(geometry);
+        geometry.vertices[1].addListener(geometry);
 
-            // Add the text area to the zoomable container
-            // positionObject is a Vector3 that adds top and left properties, so makeItZoom can use it for offsets
-            zoomInstance.addZoomable(ta);
-        }
-
-        ////////////////////////
-        // Now, use threejs/webgl to draw some lines connecting these boxes for a big nodal network
-        // diagram that you couldn't browse without zooming!
-        var glScene = new THREE.Scene(),
-            glRenderer = new THREE.WebGLRenderer( { alpha: true, antialias: true}),
-            zoomRenderer = zoomInstance.getRenderer(),
-            camera = zoomInstance.getCamera(),
-            material = new THREE.LineBasicMaterial({color: 0x000000});
-
-        glRenderer.setSize(zoomRenderer.domElement.clientWidth, zoomRenderer.domElement.clientHeight);
-        document.body.appendChild(glRenderer.domElement);
-
-        // Each box should be connected to one other, so on average each will get two connections
-        for (var j=0; j<nodeCount; j++){
-            var p1 = nodes[j].positionObject,
-                p2 = nodes[Math.floor(Math.random()*nodeCount)].positionObject;
-
-            // Add some connective lines
-            var geometry = new THREE.Geometry();
-            geometry.vertices.push(p1);
-            geometry.vertices.push(p2);
-            p1.addListener(geometry);
-            p2.addListener(geometry);
-
-            geometry.updatePosition = function(){
-                // All the work here is done, we just need to make sure the vertex buffer updates.
-                this.verticesNeedUpdate = true;
-                glRenderer.render.apply(glRenderer,[glScene,camera]);
-            };
-
-            var line = new THREE.Line(geometry, material, THREE.LineStrip);
-
-            glScene.add(line);
-        }
-
-        glRenderer.render(glScene,camera);
-
-        // MakeItZoom controls the camera for you; you just need to render your webGL scene at the right moments
-        zoomInstance.addEventListener("mz_render",function(e){
-            // No need to worry about the numeric values passed in through "e".
-            // Just re-render the glScene -- makeItZoom shares a camera!
-            glRenderer.render(glScene,camera);
-        });
-
-
-        /////////////// New code powering the draggable nodes
-        // Drag-and-drop is easy to implement with any library of your choosing. The one catch is that most drag-and-drop
-        // libraries also manipulate the css transform properties of the elements, so you need to prevent those properties
-        // from being overwritten. Here's an example implementation with interact.js:
-        interact('.draggable').draggable({
-            // call this function on every dragmove event
-            onmove: function(event){
-                // ignore dragging with the right mouse button
-                if (event.button === 2) { return; }
-
-                var currZoom = zoomInstance.getCurrentScale();
-
-                var target = event.target,
-                    deltaY = event.dy/currZoom,  // DOWN is POSITIVE
-                    deltaX = event.dx/currZoom;
-
-                target.positionObject.updatePosition( deltaY, deltaX );
-            }
-        });
-
-    </script>
+        geometry.updatePosition = function(){
+            // All the work here is done, we just need to make sure the vertex buffer updates.
+            this.verticesNeedUpdate = true;
+            glRenderer.render.apply(glRenderer,[glScene,camera]);
+        };
+    }
+</script>
 </body>
 </html>
