@@ -28,7 +28,9 @@ At the bottom of your page, initialize makeItZoom. Every configurable parameter 
 
 ```HTML
 <script type="text/javascript">
-  var instance = new MakeItZoom();
+  var instance = new MakeItZoom({
+    // Configuration Object
+  });
 </script>
 ```
 
