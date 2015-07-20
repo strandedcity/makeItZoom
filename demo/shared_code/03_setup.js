@@ -56,7 +56,7 @@ function setupExample3(zoomInstance){
         nodes.push(ta);
 
         // Add the text area to the zoomable container
-        // positionObject is a Vector3 that adds top and left properties, so makeItZoom can use it for offsets
+        // positionObject is a Vector3 that adds top and left properties, so MakeItZoom can use it for offsets
         zoomInstance.addZoomable(ta);
     }
 
@@ -95,7 +95,7 @@ function setupExample3(zoomInstance){
     // MakeItZoom controls the camera for you; you just need to render your webGL scene at the right moments
     zoomInstance.addEventListener("mz_render",function(e){
         // No need to worry about the numeric values passed in through "e".
-        // Just re-render the glScene -- makeItZoom shares a camera!
+        // Just re-render the glScene -- MakeItZoom shares a camera!
         glRenderer.render(glScene,camera);
     });
 

@@ -58,7 +58,7 @@ THREE.CSS2DRenderer = function (element) {
     this.setAlignment = function(alignment) {
         _alignment = 1; // TOP_LEFT by default
 
-        // Could do some error-checking here, but the CSS2DRenderer is really part of makeItZoom
+        // Could do some error-checking here, but the CSS2DRenderer is really part of MakeItZoom
         // so the validation there will do it for us in this case
         if (alignment === "CENTER") {
             _alignment = 0;

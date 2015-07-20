@@ -83,7 +83,7 @@
     <script type="text/javascript" src="libs/interact-1.2.4.min.js"></script>
 </head>
 <body>
-    <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
+    <!-- Set up your zoomable window. Every child of the 'MakeItZoom' element will be scalable -->
     <div id="makeItZoom">
       <div class="box dropzone" id="contextMenuExample">This box will zoom</div>
       <div class="box draggable">
@@ -93,10 +93,10 @@
       </div>
     </div>
 
-    <!-- Initialize makeItZoom() at bottom of page, or inside $.ready() or similar -->
+    <!-- Initialize MakeItZoom() at bottom of page, or inside $.ready() or similar -->
     <script type="text/javascript">
         // You can start by initializing the zoom container
-        var zoomInstance = new makeItZoom({
+        var zoomInstance = new MakeItZoom({
             maxZoomScale: 5,
             hardwareAccelerated: false
         });

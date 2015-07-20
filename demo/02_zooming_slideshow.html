@@ -105,14 +105,14 @@
 
     <!--<script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>-->
     <!--<script type="text/javascript" src="../src/js/ZoomControls.js"></script>-->
-    <!--<script type="text/javascript" src="../src/js/makeItZoom.js"></script>-->
+    <!--<script type="text/javascript" src="../src/js/MakeItZoom.js"></script>-->
     <script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>
 
     <!-- Using Greensock TweenLite to power animations between slides. See http://greensock.com/tweenlite -->
     <script type="text/javascript" src="libs/TweenLite.min.js"></script>
 </head>
 <body>
-    <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
+    <!-- Set up your zoomable window. Every child of the 'MakeItZoom' element will be scalable -->
     <div id="makeItZoom">
         <div class="slide big" id="slide_2" position-x="700" position-y="700" size="1200">
             <div class="heading">Make Your Mark!</div>
@@ -202,7 +202,7 @@
         });
 
         // Initialize MakeItZoom.
-        var zoomInstance = new makeItZoom({
+        var zoomInstance = new MakeItZoom({
                 fullScreen: true,
                 zeroAtCenter: true, // 0,0 will be in the top left corner by default. Inconvenient if you're trying to zoom on objects' center points
                 enableUserInteractions: false // no mousewheel/pan/drag/touch events needed for a slideshow. We'll register our own interactions if need be

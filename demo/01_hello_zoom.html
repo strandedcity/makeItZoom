@@ -93,10 +93,10 @@
 
     <!--<script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>-->
     <!--<script type="text/javascript" src="../src/js/ZoomControls.js"></script>-->
-    <!--<script type="text/javascript" src="../src/js/makeItZoom.js"></script>-->
+    <!--<script type="text/javascript" src="../src/js/MakeItZoom.js"></script>-->
 </head>
 <body>
-    <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
+    <!-- Set up your zoomable window. Every child of the 'MakeItZoom' element will be scalable -->
     <div id="makeItZoom">
       <div class="textdiv hello">Hello,</div>
       <div class="textdiv zoom">Zooooom!</div>
@@ -104,11 +104,11 @@
 
     <button id="manualToggle">Manual</button>
 
-    <!-- Initialize makeItZoom() at bottom of page, or inside $.ready() or similar -->
+    <!-- Initialize MakeItZoom() at bottom of page, or inside $.ready() or similar -->
     <!--<script type="text/javascript" src="../dist/makeItZoom_0.0.1.min.js"></script>-->
     <script type="text/javascript">
         // You can start by initializing the zoom container
-        var zoomInstance = new makeItZoom({
+        var zoomInstance = new MakeItZoom({
             containerId: "makeItZoom",
             zoomSpeed: 3,
             maxZoomScale: 20,

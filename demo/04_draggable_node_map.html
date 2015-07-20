@@ -5,20 +5,20 @@
     <link href="shared_code/03_shared_css.css" type="text/css" rel="stylesheet"/>
 </head>
 <body>
-<!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
+<!-- Set up your zoomable window. Every child of the 'MakeItZoom' element will be scalable -->
 <div id="makeItZoom">
 </div>
 
 <!-- This example draws an aligned WebGL scene on top of the zoomable one, so threejs is required -->
 <script type="text/javascript" src="libs/three.min.js"></script>
-<script type="text/javascript" src="../dist/makeItZoom_0.0.1_requires_three.min.js"></script> <!-- Note version of makeItZoom -->
+<script type="text/javascript" src="../dist/makeItZoom_0.0.1_requires_three.min.js"></script> <!-- Note version of MakeItZoom -->
 <script type="text/javascript" src="libs/interact-1.2.4.min.js"></script> <!-- Drag and drop du jour -->
 
 <script type="text/javascript" src="shared_code/03_setup.js"></script> <!-- Example setup code shared between ex3 and ex4 -->
 
 <script type="text/javascript">
     // You can start by initializing the zoom container
-    var zoomInstance = new makeItZoom({
+    var zoomInstance = new MakeItZoom({
         // hardwareAccelerated: false, // Uncomment to see the performance difference!
         containerId: "makeItZoom",
         zoomSpeed: 3,

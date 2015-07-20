@@ -1,10 +1,10 @@
 
-function makeItZoom(){
+function MakeItZoom(){
     var options = arguments[0] || {};
     this.init(options);
 }
 
-makeItZoom.prototype.init = function(options){
+MakeItZoom.prototype.init = function(options){
     // The syntax used here is extremely important! Using the string literals in reference to the options object as it's
     // passed in ensures that those options will be specifiable by the user. Internally, they will be renamed by Closure.
     // So the user passes in options[containerId] = "myContainer", and the result might be that internally o.a = "myContainer".
@@ -55,11 +55,11 @@ makeItZoom.prototype.init = function(options){
     this.controls.update(); // triggers initial render, but also makes sure that the display conforms to bounds
 };
 
-makeItZoom.prototype.setEnableUserInteractions = function(state) {
+MakeItZoom.prototype.setEnableUserInteractions = function(state) {
     this.controls.enableInteractions(state);
 };
 
-makeItZoom.prototype.setFullScreen = function(on){
+MakeItZoom.prototype.setFullScreen = function(on){
     var that = this;
 
     function onWindowResize(){
@@ -84,11 +84,11 @@ makeItZoom.prototype.setFullScreen = function(on){
     }
 };
 
-makeItZoom.prototype.getContainer = function(){
+MakeItZoom.prototype.getContainer = function(){
     return this.container;
 };
 
-makeItZoom.prototype.cacheElements = function(container){
+MakeItZoom.prototype.cacheElements = function(container){
     var that = this,
         elements = [];
 
@@ -117,21 +117,21 @@ makeItZoom.prototype.cacheElements = function(container){
     return elements;
 };
 
-makeItZoom.prototype.replaceElements = function(elements){
+MakeItZoom.prototype.replaceElements = function(elements){
     for (var i=0; i<elements.length; i++){
         var child = elements[i];
         this._addZoomable.call(this,child,child.mzOffset);
     }
 };
 
-makeItZoom.prototype._addZoomable = function(element){
+MakeItZoom.prototype._addZoomable = function(element){
 
     var cssObject = new THREE.CSS2DObject( element );
 
     this.scene.add(cssObject);
 };
 
-makeItZoom.prototype.childElementIterator = function(parent,childCallback){
+MakeItZoom.prototype.childElementIterator = function(parent,childCallback){
     var that=this,
         children = parent.children;
     for (var i = 0; i < children.length; i++) {
@@ -140,7 +140,7 @@ makeItZoom.prototype.childElementIterator = function(parent,childCallback){
     }
 };
 
-makeItZoom.prototype.attachControls = function(){
+MakeItZoom.prototype.attachControls = function(){
     this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
     this.controls.zoomSpeed = this.options.zoomSpeed;
     this.controls.setMinZoomScale(this.options.minZoomScale);
@@ -162,7 +162,7 @@ makeItZoom.prototype.attachControls = function(){
     this.render();
 };
 
-makeItZoom.prototype.render = function(){
+MakeItZoom.prototype.render = function(){
     this.renderer.render(this.scene,this.camera);
 
     // Dispatch an event with the new center and scale:
@@ -173,12 +173,12 @@ makeItZoom.prototype.render = function(){
     this.dispatchEvent(renderEvent);
 };
 
-makeItZoom.prototype.addZoomable = function(element){
+MakeItZoom.prototype.addZoomable = function(element){
     this._addZoomable(element);
     this.render();
 };
 
-makeItZoom.prototype.removeZoomable = function(element){
+MakeItZoom.prototype.removeZoomable = function(element){
     var removeMe = null;
 
     for (var i = 0; i< this.scene.children.length; i++){
@@ -190,13 +190,13 @@ makeItZoom.prototype.removeZoomable = function(element){
     if (removeMe !== null) {
         this.scene.remove(removeMe);
     } else {
-        console.warn("The specified element could not be removed from the makeItZoom workspace, because it couldn't be found.");
+        console.warn("The specified element could not be removed from the MakeItZoom workspace, because it couldn't be found.");
     }
 
     this.render();
 };
 
-makeItZoom.prototype.getOffset = function(el){
+MakeItZoom.prototype.getOffset = function(el){
     var _x = 0;
     var _y = 0;
     while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
@@ -207,17 +207,17 @@ makeItZoom.prototype.getOffset = function(el){
     return { top: _y, left: _x };
 };
 
-makeItZoom.prototype.getCurrentScale = function(){
+MakeItZoom.prototype.getCurrentScale = function(){
     return this.controls.currentZoomScale;
 };
-makeItZoom.prototype.getCenter = function(){
+MakeItZoom.prototype.getCenter = function(){
     return {
         "x": this.camera.position.x,
         "y": this.camera.position.y
     };
 };
 
-makeItZoom.prototype.zoomTo = function(x,y,scale){
+MakeItZoom.prototype.zoomTo = function(x,y,scale){
     var currX = this.controls.object.position.x,
         currY = this.controls.object.position.y,
         currScale = this.controls.currentZoomScale;
@@ -233,25 +233,25 @@ makeItZoom.prototype.zoomTo = function(x,y,scale){
 };
 
 // These getters are NOT protected from Closure renaming, purposely.
-// There are two versions of makeItZoom:
+// There are two versions of MakeItZoom:
 // 1) Fully Minified, no threejs dependency, no shared objects. These variables will be renamed, as will all their properties. So there's no use getting them.
 // 2) Simply Minified, depends on threejs, shares objects such as camera, scene, and renderer. Could be useful to have access from outside, so that a webgl scene could be overlaid / aligned with the CSS scene
-makeItZoom.prototype.getScene = function(){return this.scene;};
-makeItZoom.prototype.getCamera = function(){return this.camera;};
-makeItZoom.prototype.getRenderer = function(){return this.renderer;};
+MakeItZoom.prototype.getScene = function(){return this.scene;};
+MakeItZoom.prototype.getCamera = function(){return this.camera;};
+MakeItZoom.prototype.getRenderer = function(){return this.renderer;};
 
-THREE.EventDispatcher.prototype.apply( makeItZoom.prototype );
+THREE.EventDispatcher.prototype.apply( MakeItZoom.prototype );
 
-// Prevent Closure from removing makeItZoom's public API:
-window["makeItZoom"] = makeItZoom;
-makeItZoom.prototype["addZoomable"] = makeItZoom.prototype.addZoomable;
-makeItZoom.prototype["removeZoomable"] = makeItZoom.prototype.removeZoomable;
-makeItZoom.prototype["zoomTo"] = makeItZoom.prototype.zoomTo;
-makeItZoom.prototype["getCurrentScale"] = makeItZoom.prototype.getCurrentScale;
-makeItZoom.prototype["getCenter"] = makeItZoom.prototype.getCenter;
-makeItZoom.prototype["getOffset"] = makeItZoom.prototype.getOffset;
-makeItZoom.prototype["getContainer"] = makeItZoom.prototype.getContainer;
-makeItZoom.prototype["setEnableUserInteractions"] = makeItZoom.prototype.setEnableUserInteractions;
+// Prevent Closure from removing MakeItZoom's public API:
+window["MakeItZoom"] = MakeItZoom;
+MakeItZoom.prototype["addZoomable"] = MakeItZoom.prototype.addZoomable;
+MakeItZoom.prototype["removeZoomable"] = MakeItZoom.prototype.removeZoomable;
+MakeItZoom.prototype["zoomTo"] = MakeItZoom.prototype.zoomTo;
+MakeItZoom.prototype["getCurrentScale"] = MakeItZoom.prototype.getCurrentScale;
+MakeItZoom.prototype["getCenter"] = MakeItZoom.prototype.getCenter;
+MakeItZoom.prototype["getOffset"] = MakeItZoom.prototype.getOffset;
+MakeItZoom.prototype["getContainer"] = MakeItZoom.prototype.getContainer;
+MakeItZoom.prototype["setEnableUserInteractions"] = MakeItZoom.prototype.setEnableUserInteractions;
 
 // TODO: getCurrentCenter, getCurrentBounds
 
