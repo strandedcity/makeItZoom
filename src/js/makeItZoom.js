@@ -124,14 +124,9 @@ makeItZoom.prototype.replaceElements = function(elements){
     }
 };
 
-makeItZoom.prototype._addZoomable = function(element, offset){
+makeItZoom.prototype._addZoomable = function(element){
 
     var cssObject = new THREE.CSS2DObject( element );
-    if (offset) {
-        cssObject.element.style.left = offset.left + "px";
-        cssObject.element.style.top =  offset.top + "px";
-    }
-    cssObject.position.z = 0;
 
     this.scene.add(cssObject);
 };
@@ -178,8 +173,8 @@ makeItZoom.prototype.render = function(){
     this.dispatchEvent(renderEvent);
 };
 
-makeItZoom.prototype.addZoomable = function(element, offset){
-    this._addZoomable(element,{left: offset["left"], top: offset["top"]});
+makeItZoom.prototype.addZoomable = function(element){
+    this._addZoomable(element);
     this.render();
 };
 

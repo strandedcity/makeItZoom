@@ -50,18 +50,6 @@
     <script type="text/javascript" src="libs/three.min.js"></script>
     <script type="text/javascript" src="../dist/makeItZoom_0.0.1_requires_three.min.js"></script>
 
-    <!--<script type="text/javascript" src="../src/threejs_files/Three.js"></script>-->
-    <!--<script type="text/javascript" src="../src/threejs_files/Vector2.js"></script>-->
-    <!--<script type="text/javascript" src="../src/threejs_files/Vector3.js"></script>-->
-    <!--<script type="text/javascript" src="../src/threejs_files/Quaternion.js"></script>-->
-    <!--<script type="text/javascript" src="../src/threejs_files/Matrix4.js"></script>-->
-    <!--<script type="text/javascript" src="../src/threejs_files/EventDispatcher.js"></script>-->
-    <!--<script type="text/javascript" src="../src/threejs_files/Math.js"></script>-->
-    <!--<script type="text/javascript" src="../src/threejs_files/Object3D.js"></script>-->
-    <!--<script type="text/javascript" src="../src/threejs_files/Camera.js"></script>-->
-    <!--<script type="text/javascript" src="../src/threejs_files/PerspectiveCamera.js"></script>-->
-    <!--<script type="text/javascript" src="../src/threejs_files/Scene.js"></script>-->
-
     <!--<script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>-->
     <!--<script type="text/javascript" src="../src/js/ZoomControls.js"></script>-->
     <!--<script type="text/javascript" src="../src/js/makeItZoom.js"></script>-->
@@ -138,6 +126,7 @@
                 this.style.top = pos.top + "px";
                 this.style.left = pos.left + "px";
             };
+            ta.updatePosition(ta.positionObject);
             nodes.push(ta);
 
             // Add the text area to the zoomable container
