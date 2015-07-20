@@ -249,11 +249,9 @@
 
         }
 
-        // Attach event listeners
-        slideIterator(function(slide){
-            slide.addEventListener("mouseup",function(){
-                advance();
-            });
+        // Attach event listener
+        document.body.addEventListener("mouseup",function(){
+            advance();
         });
 
     </script>
