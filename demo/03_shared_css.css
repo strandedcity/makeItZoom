@@ -1,0 +1,36 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+#makeItZoom {
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+textarea {
+    font-family: 'Droid Sans', sans-serif;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 10px;
+    outline: none;
+    box-sizing: border-box;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 10px;
+    font-weight: bold;
+    resize: none;
+    border: 10px solid #CCC;
+    border-radius: 10px;
+    width: 120px;
+    height: 120px;
+    margin-left: -60px;
+    margin-top: -60px;
+}
+textarea:hover {
+    opacity: 0.5;
+}

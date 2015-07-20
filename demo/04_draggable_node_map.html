@@ -2,44 +2,7 @@
 <html>
 <head>
     <title>makeItZoom.js - Easy ZUIs</title>
-    <style type="text/css">
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
-
-        #makeItZoom {
-            margin: 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-        textarea {
-            font-family: 'Droid Sans', sans-serif;
-            display: inline-block;
-            text-align: center;
-            vertical-align: middle;
-            line-height: 10px;
-            outline: none;
-            box-sizing: border-box;
-            cursor: pointer;
-            padding: 10px;
-            font-size: 10px;
-            font-weight: bold;
-            resize: none;
-            border: 10px solid #CCC;
-            border-radius: 10px;
-            width: 120px;
-            height: 120px;
-            margin-left: -60px;
-            margin-top: -60px;
-        }
-        textarea:hover {
-            opacity: 0.5;
-        }
-    </style>
+    <link href="03_shared_css.css" type="text/css" rel="stylesheet"/>
 </head>
 <body>
 <!-- Set up your zoomable window. Every child of the 'makeItZoom' element will be scalable -->
@@ -48,15 +11,10 @@
 
 <!-- This example draws an aligned WebGL scene on top of the zoomable one, so threejs is required -->
 <script type="text/javascript" src="libs/three.min.js"></script>
-<script type="text/javascript" src="../dist/makeItZoom_0.0.1_requires_three.min.js"></script>
+<script type="text/javascript" src="../dist/makeItZoom_0.0.1_requires_three.min.js"></script> <!-- Note version of makeItZoom -->
+<script type="text/javascript" src="libs/interact-1.2.4.min.js"></script> <!-- Drag and drop du jour -->
 
-<!--<script type="text/javascript" src="../src/js/CSS2DRenderer.js"></script>-->
-<!--<script type="text/javascript" src="../src/js/ZoomControls.js"></script>-->
-<!--<script type="text/javascript" src="../src/js/makeItZoom.js"></script>-->
-
-<script type="text/javascript" src="libs/interact-1.2.4.min.js"></script>
-
-<script type="text/javascript" src="03_setup.js"></script>
+<script type="text/javascript" src="03_setup.js"></script> <!-- Example setup code shared between ex3 and ex4 -->
 
 <script type="text/javascript">
     // You can start by initializing the zoom container
