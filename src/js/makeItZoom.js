@@ -179,9 +179,9 @@ makeItZoom.prototype.render = function(){
 };
 
 makeItZoom.prototype.addZoomable = function(element, offset){
-    this._addZoomable(element,{left: offset["left"], top: -offset["top"]});
+    this._addZoomable(element,{left: offset["left"], top: offset["top"]});
     this.render();
-}
+};
 
 makeItZoom.prototype.removeZoomable = function(element){
     var removeMe = null;

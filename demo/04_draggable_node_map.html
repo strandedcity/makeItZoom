@@ -78,24 +78,20 @@
 
             this.left = 200 * (Math.round(Math.random()*40) - 20);
             this.top = 200 * (Math.round(Math.random()*30) - 15);
-            this.set(this.left,this.top,0);
+            this.set(this.left,-this.top,0); // for Three.js, UP is POSITIVE
             this._listeners = [];
 
             this.addListener = function(listener) {
                 this._listeners.push(listener);
             };
-            this.updatePosition = function(top,left){
-                // this.top and this.left do NOT need to be updated. Those are used for the original possitioning of the CSS
-                // draggables, and are updated in this implementation directly by the 'onmove' function below.
-                // This is questionable architecture, but serves to make the drag and drop example dependency free for clarity
-
-                // Note also that "top" is reversed for the WebGL scene, where the coordinate system is backwards.
-                // (+y is up)
-                this.left += left;
-                this.top -= top;
+            this.updatePosition = function(deltaY,deltaX){
+                // for CSS, DOWN is POSITIVE
+                // for Three.js, UP is POSITIVE
+                // This discrepency needs to be worked out now
+                this.left += deltaX;
+                this.top += deltaY;
                 this.setX(this.left);
-                this.setY(this.top);
-
+                this.setY(-this.top);  // UP is POSITIVE
                 for (var i=0; i<this._listeners.length; i++){
                     var callback = this._listeners[i].updatePosition;
                     if (typeof callback === "function") callback.call(this._listeners[i],this);
@@ -128,7 +124,7 @@
         }
 
         var container = document.getElementById("makeItZoom"),
-            nodeCount = 2,
+            nodeCount = 100,
             nodes = [];
         for (var i=0; i<nodeCount; i++){
             // Create a textarea with some random text, coloring, and positioning
@@ -139,7 +135,7 @@
             ta.positionObject = new PositionObject();
             ta.positionObject.addListener(ta);
             ta.updatePosition = function(pos){
-                this.style.top = -pos.top + "px";
+                this.style.top = pos.top + "px";
                 this.style.left = pos.left + "px";
             };
             nodes.push(ta);
@@ -165,8 +161,6 @@
         for (var j=0; j<nodeCount; j++){
             var p1 = nodes[j].positionObject,
                 p2 = nodes[Math.floor(Math.random()*nodeCount)].positionObject;
-
-
 
             // Add some connective lines
             var geometry = new THREE.Geometry();
@@ -209,10 +203,10 @@
                 var currZoom = zoomInstance.getCurrentScale();
 
                 var target = event.target,
-                    deltaY = event.dy/currZoom,
+                    deltaY = event.dy/currZoom,  // DOWN is POSITIVE
                     deltaX = event.dx/currZoom;
-                
-                target.positionObject.updatePosition( deltaY, deltaX);
+
+                target.positionObject.updatePosition( deltaY, deltaX );
             }
         });
 
